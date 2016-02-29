@@ -7,7 +7,7 @@ from PyQt5 import QtWidgets
 
 app = QtWidgets.QApplication([])
 
-import qimage
+from .. import qimage
 
 
 class QImageTest(unittest.TestCase):

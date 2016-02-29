@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-import slides
+from .. import slides
 
 class Slides(unittest.TestCase):
     def test_simple_convert(self):
