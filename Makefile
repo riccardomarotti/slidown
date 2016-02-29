@@ -2,7 +2,7 @@ init:
 	pip install -r requirements.txt
 
 test:
-	nosetests -v slidown/tests
+	nosetests -v **/tests
 
 start:
 	python slidown/slidown.py
