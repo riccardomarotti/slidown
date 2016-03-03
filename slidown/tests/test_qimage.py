@@ -21,7 +21,7 @@ def test_image_from_html():
     mock_frame.contentsSize.return_value = 'a content size'
 
     with unittest.mock.patch('PyQt5.QtGui.QImage') as mock_qimage:
-        actual_image_result = qimage.from_html('<h1> A Title </h1>',
+        actual_image_result = qimage.qimage_from_html('<h1> A Title </h1>',
                                                mock_webkit,
                                                mock_painter)
 

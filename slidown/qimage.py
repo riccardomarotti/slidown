@@ -3,7 +3,7 @@
 from PyQt5 import QtGui
 from PyQt5 import QtWebKitWidgets
 
-def from_html(html, webkit=QtWebKitWidgets.QWebView(), painter=QtGui.QPainter()):
+def qimage_from_html(html, webkit=QtWebKitWidgets.QWebView(), painter=QtGui.QPainter()):
     webkit.setHtml(html)
     page = webkit.page()
     frame = page.mainFrame()
@@ -13,3 +13,6 @@ def from_html(html, webkit=QtWebKitWidgets.QWebView(), painter=QtGui.QPainter())
     painter.end()
 
     return image
+
+def qimages_from_htmls(html_slides):
+    return map(qimage_from_html, html_slides)
