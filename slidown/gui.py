@@ -15,13 +15,14 @@ def get_presentation_md_source():
 
     return None
 
-def change_layout_to(widget, layout):
-    QtWidgets.QWidget().setLayout(widget.layout())
-    widget.setLayout(layout)
-    widget.resize(QtWidgets.QApplication.instance().activeWindow().size())
+
+def single_button(stacked_layout, pixmap):
+    button = stacked_layout.widget(1)
+    update_button_image(button, pixmap)
+    stacked_layout.setCurrentIndex(1)
 
 
-def layout_for_list(pixmaps, widget):
+def layout_for_list(pixmaps, stacked_layout):
     grid = QtWidgets.QGridLayout()
     size = 300
     number_of_columns = size // 100
@@ -31,23 +32,17 @@ def layout_for_list(pixmaps, widget):
         button.setIcon(pixmap)
         button.setIconSize(QtCore.QSize(size, size))
         button.setFlat(True)
-        button.clicked.connect(lambda x, pixmap=pixmap: change_layout_to(widget, layout_for_single(pixmap)))
+        button.clicked.connect(lambda x, pixmap=pixmap: single_button(stacked_layout, pixmap))
         grid.addWidget(button, i / number_of_columns, i % number_of_columns)
 
     return grid
 
-def layout_for_single(pixmap):
-    grid = QtWidgets.QGridLayout()
-
-    button = QtWidgets.QPushButton()
+def update_button_image(button, pixmap):
     button.setIcon(pixmap)
     button.setIconSize(QtWidgets.QApplication.instance().activeWindow().size())
     button.setFlat(True)
-    #button.clicked.connect(lambda x,i=i: open_file_dialog(i))
-    grid.addWidget(button, 0, 0)
-
-    return grid
+    return button
 
 def pixmaps_from_qimages(qimages):
-    return map(lambda qimage: QtGui.QIcon(QtGui.QPixmap.fromImage(qimage)),
-              qimages)
+    return list(map(lambda qimage: QtGui.QIcon(QtGui.QPixmap.fromImage(qimage)),
+              qimages))

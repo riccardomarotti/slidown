@@ -15,4 +15,4 @@ def qimage_from_html(html, webkit=QtWebKitWidgets.QWebView(), painter=QtGui.QPai
     return image
 
 def qimages_from_htmls(html_slides):
-    return map(qimage_from_html, html_slides)
+    return list(map(qimage_from_html, html_slides))
