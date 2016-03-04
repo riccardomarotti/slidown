@@ -26,8 +26,7 @@ presentation_md_source = gui.get_presentation_md_source()
 if not presentation_md_source:
     sys.exit(0)
 
-html_slides = slides.slides_from_html(slides.html_from_markdown(
-    presentation_md_source))
+html_slides = slides.slides_from_markdown(presentation_md_source)
 qimages = qimage.qimages_from_htmls(html_slides)
 pixmaps = gui.pixmaps_from_qimages(qimages)
 

@@ -30,6 +30,8 @@ def test_split():
   assert_equals(expected_output,
                 slides.slides_from_html(slides.html_from_markdown(markdown)))
 
+  assert_equals(expected_output, slides.slides_from_markdown(markdown))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -7,3 +7,6 @@ def html_from_markdown(markdown_text):
 
 def slides_from_html(html):
     return list(map(lambda str: str.strip(), html.split('<hr />')))
+
+def slides_from_markdown(markdown):
+    return slides_from_html(html_from_markdown(markdown))
