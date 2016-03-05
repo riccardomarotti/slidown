@@ -3,6 +3,7 @@
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 from PyQt5 import QtGui
+
 from os.path import expanduser
 import qimage
 
@@ -16,9 +17,9 @@ def get_presentation_md_source():
     return None
 
 
-def single_button(stacked_layout, pixmap):
-    button = stacked_layout.widget(1)
-    update_button_image(button, pixmap)
+def single_page_layout(stacked_layout, html_slide):
+    web_view = stacked_layout.widget(1)
+    web_view.setHtml(html_slide)
     stacked_layout.setCurrentIndex(1)
 
 
@@ -34,16 +35,10 @@ def layout_for_list(html_slides, stacked_layout):
         button.setIcon(pixmap)
         button.setIconSize(QtCore.QSize(size, size))
         button.setFlat(True)
-        button.clicked.connect(lambda x, pixmap=pixmap: single_button(stacked_layout, pixmap))
+        button.clicked.connect(lambda x, pixmap=pixmap: single_page_layout(stacked_layout, html_slide))
         grid.addWidget(button, i / number_of_columns, i % number_of_columns)
 
     return grid
-
-def update_button_image(button, pixmap):
-    button.setIcon(pixmap)
-    button.setIconSize(QtWidgets.QApplication.instance().activeWindow().size())
-    button.setFlat(True)
-    return button
 
 def pixmap_from_qimage(qimage):
     return QtGui.QIcon(QtGui.QPixmap.fromImage(qimage))

@@ -6,6 +6,7 @@ from os.path import expanduser
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 from PyQt5 import QtGui
+from PyQt5 import QtWebKitWidgets
 
 
 def keypressed(event, stacked_layout):
@@ -35,7 +36,7 @@ widget.setLayout(grid)
 scroll_area = QtWidgets.QScrollArea()
 scroll_area.setWidget(widget)
 stacked_layout.addWidget(scroll_area)
-single_widget = QtWidgets.QPushButton()
+single_widget = QtWebKitWidgets.QWebView()
 stacked_layout.addWidget(single_widget)
 
 main_widget.setLayout(stacked_layout)
