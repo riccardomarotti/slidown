@@ -17,7 +17,6 @@ def keypressed(event, stacked_layout):
 
 app = QtWidgets.QApplication(sys.argv)
 
-import qimage
 import slides
 import gui
 
@@ -27,14 +26,11 @@ if not presentation_md_source:
     sys.exit(0)
 
 html_slides = slides.slides_from_markdown(presentation_md_source)
-qimages = qimage.qimages_from_htmls(html_slides)
-pixmaps = gui.pixmaps_from_qimages(qimages)
-
 main_widget = QtWidgets.QWidget()
 
 stacked_layout = QtWidgets.QStackedLayout()
 widget = QtWidgets.QWidget()
-grid = gui.layout_for_list(pixmaps, stacked_layout)
+grid = gui.layout_for_list(html_slides, stacked_layout)
 widget.setLayout(grid)
 scroll_area = QtWidgets.QScrollArea()
 scroll_area.setWidget(widget)

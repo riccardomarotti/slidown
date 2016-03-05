@@ -4,7 +4,7 @@ from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 from PyQt5 import QtGui
 from os.path import expanduser
-
+import qimage
 
 def get_presentation_md_source():
     fname = QtWidgets.QFileDialog.getOpenFileName(None,
@@ -22,10 +22,13 @@ def single_button(stacked_layout, pixmap):
     stacked_layout.setCurrentIndex(1)
 
 
-def layout_for_list(pixmaps, stacked_layout):
+def layout_for_list(html_slides, stacked_layout):
     grid = QtWidgets.QGridLayout()
     size = 300
     number_of_columns = size // 100
+
+    qimages = qimage.qimages_from_htmls(html_slides)
+    pixmaps = pixmaps_from_qimages(qimages)
 
     for i, pixmap in enumerate(pixmaps):
         button = QtWidgets.QPushButton()
