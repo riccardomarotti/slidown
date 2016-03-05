@@ -1,47 +1,38 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from os.path import expanduser
+import os
 
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 from PyQt5 import QtGui
 from PyQt5 import QtWebKitWidgets
 
+import pypandoc
 
-def keypressed(event, stacked_layout):
-    if type(event) == QtGui.QKeyEvent and event.key() == QtCore.Qt.Key_Escape:
-        stacked_layout.setCurrentIndex(0)
-        event.accept()
-    else:
-        event.ignore()
 
 app = QtWidgets.QApplication(sys.argv)
 
-import slides
-import gui
+presentation_md_file = QtWidgets.QFileDialog.getOpenFileName(None,
+                                                             'Open presentation',
+                                                             os.path.expanduser('~'))[0]
 
-presentation_md_source = gui.get_presentation_md_source()
-
-if not presentation_md_source:
+if not presentation_md_file:
     sys.exit(0)
 
-html_slides = slides.slides_from_markdown(presentation_md_source)
-main_widget = QtWidgets.QWidget()
+reveal_js_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                              'reveal.js')
 
-stacked_layout = QtWidgets.QStackedLayout()
-widget = QtWidgets.QWidget()
-grid = gui.layout_for_list(html_slides, stacked_layout)
-widget.setLayout(grid)
-scroll_area = QtWidgets.QScrollArea()
-scroll_area.setWidget(widget)
-stacked_layout.addWidget(scroll_area)
-single_widget = QtWebKitWidgets.QWebView()
-stacked_layout.addWidget(single_widget)
+reveal_html = pypandoc.convert(presentation_md_file,
+                               'revealjs',
+                               extra_args=['-V', 'revealjs-url:' + reveal_js_path,
+                                           '--self-contained',
+                                           '-V', 'theme:white'])
 
-main_widget.setLayout(stacked_layout)
-main_widget.show()
+main_widget = QtWebKitWidgets.QWebView()
+main_widget.setHtml(reveal_html)
 
-single_widget.keyPressEvent = lambda event: keypressed(event, stacked_layout)
+main_widget.loadFinished.connect(lambda: main_widget.page().mainFrame().evaluateJavaScript('Reveal.toggleOverview();'))
+main_widget.loadFinished.connect(lambda: main_widget.show())
 
 sys.exit(app.exec_())
