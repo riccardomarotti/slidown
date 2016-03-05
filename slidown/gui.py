@@ -27,10 +27,9 @@ def layout_for_list(html_slides, stacked_layout):
     size = 300
     number_of_columns = size // 100
 
-    qimages = qimage.qimages_from_htmls(html_slides)
-    pixmaps = pixmaps_from_qimages(qimages)
+    for i, html_slide in enumerate(html_slides):
+        pixmap = pixmap_from_qimage(qimage.qimage_from_html(html_slide))
 
-    for i, pixmap in enumerate(pixmaps):
         button = QtWidgets.QPushButton()
         button.setIcon(pixmap)
         button.setIconSize(QtCore.QSize(size, size))
@@ -46,6 +45,5 @@ def update_button_image(button, pixmap):
     button.setFlat(True)
     return button
 
-def pixmaps_from_qimages(qimages):
-    return list(map(lambda qimage: QtGui.QIcon(QtGui.QPixmap.fromImage(qimage)),
-              qimages))
+def pixmap_from_qimage(qimage):
+    return QtGui.QIcon(QtGui.QPixmap.fromImage(qimage))
