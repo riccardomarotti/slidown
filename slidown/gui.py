@@ -19,19 +19,3 @@ def mode_change(mode, main_widget):
     main_widget.setWindowFlags(window_flags)
 
     main_widget.show()
-
-def theme_radio_button(theme,
-                       presentation_md_file,
-                       web_view,
-                       presentation_file_watcher,
-                       checked=False):
-    radio = QtWidgets.QRadioButton(theme)
-    radio.clicked.connect(lambda state: monitor.refresh_presentation(
-        presentation_md_file,
-        web_view,
-        presentation_file_watcher,
-        theme.lower()))
-    radio.setChecked(checked)
-
-
-    return radio

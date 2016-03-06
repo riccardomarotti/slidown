@@ -52,22 +52,20 @@ mode_checkbox.setText('Edit mode')
 mode_checkbox.stateChanged.connect(lambda state: gui.mode_change(state,
                                                              main_widget))
 
-
-theme_radio_buttons = [gui.theme_radio_button(theme,
-                                              presentation_md_file,
-                                              web_view,
-                                              presentation_file_watcher)
-                       for theme in ['White', 'Black', 'League', 'Beige', 'Sky',
-                                     'Night', 'Serif', 'Simple', 'Solarized']]
-theme_radio_buttons[0].setChecked(True)
-
-
+themes = ['White', 'Black', 'League', 'Beige', 'Sky',
+          'Night', 'Serif', 'Simple', 'Solarized']
 
 lower_window_layout = QtWidgets.QHBoxLayout()
 lower_window_layout.addWidget(mode_checkbox)
 
-for button in theme_radio_buttons:
-    lower_window_layout.addWidget(button)
+themes_combo =QtWidgets.QComboBox()
+themes_combo.addItems(themes)
+themes_combo.activated.connect(lambda index: monitor.refresh_presentation(
+        presentation_md_file,
+        web_view,
+        presentation_file_watcher,
+        themes[index].lower()))
+lower_window_layout.addWidget(themes_combo)
 
 
 group = QtWidgets.QGroupBox()
