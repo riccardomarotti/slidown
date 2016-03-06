@@ -44,3 +44,21 @@ def test_get_changed_slide_with_file():
     html2 = open(os.path.join(current_dir, 'test_file2.html')).read()
 
     assert_equals(3, core.get_changed_slide(html1, html2))
+
+
+def test_get_changed_slide_added_slide():
+    html1 = '\
+<section class="slide">\
+<h1> A title </h1>\
+</section>\
+'
+    html2 = '\
+<section class="slide">\
+<h1> A title </h1>\
+</section>\
+<section class="slide">\
+<h1> A title 2 </h1>\
+</section>\
+'
+
+    assert_equals(1, core.get_changed_slide(html1, html2))

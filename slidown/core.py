@@ -12,7 +12,7 @@ def generate_presentation_html(presentation_md_file, theme='white'):
                             'revealjs',
                             extra_args=['-V', 'revealjs-url:' + reveal_js_path,
                                         '--self-contained',
-                                        '-V', 'transition:slide',
+                                        '-V', 'transition:zoom',
                                         '-V', 'theme:' + theme])
 
 def get_changed_slide(old_html, new_html):
@@ -23,6 +23,9 @@ def get_changed_slide(old_html, new_html):
     slides_new = soup_new.find_all('section', attrs={'class': 'slide'})
 
     different_slide_index = -1
+
+    if len(slides_new) != len(slides_old):
+        return len(slides_new) - 1
 
     for index, slide_new in enumerate(slides_new):
         if slide_new != slides_old[index]:
