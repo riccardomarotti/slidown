@@ -67,6 +67,23 @@ themes_combo.activated.connect(lambda index: monitor.refresh_presentation(
         themes[index].lower()))
 lower_window_layout.addWidget(themes_combo)
 
+export_button = QtWidgets.QPushButton('Export as HTML')
+
+
+def export_html(presentation_md_file):
+    presentation_html_file = QtWidgets.QFileDialog.getSaveFileName(None,
+                                                                   'Export presentation',
+                                                                   os.path.expanduser('~'))[0]
+    if not presentation_html_file:
+        return
+
+    output = core.generate_presentation_html(presentation_md_file)
+    open(presentation_html_file, 'w').write(output)
+
+
+export_button.clicked.connect(lambda: export_html(presentation_md_file))
+lower_window_layout.addWidget(export_button)
+
 
 group = QtWidgets.QGroupBox()
 group.setLayout(lower_window_layout)
