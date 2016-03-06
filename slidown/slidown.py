@@ -37,7 +37,8 @@ presentation_file_watcher = QtCore.QFileSystemWatcher(
 
 presentation_file_watcher.fileChanged.connect(
     lambda file_name: monitor.on_file_changed(file_name, [main_widget],
-                                              presentation_html))
+                                              presentation_html,
+                                              presentation_file_watcher))
 
 presentation_file_watcher.directoryChanged.connect(
     lambda directory_name: monitor.on_directory_changed(
