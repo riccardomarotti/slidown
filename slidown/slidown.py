@@ -25,6 +25,19 @@ if not presentation_md_file:
 
 presentation_html = core.generate_presentation_html(presentation_md_file)
 
+presentation_file_watcher = QtCore.QFileSystemWatcher(
+    [presentation_md_file,
+     os.path.dirname(presentation_md_file)])
+
+presentation_file_watcher.fileChanged.connect(
+    lambda file_name: monitor.on_file_changed(file_name, web_view,
+                                              presentation_html,
+                                              presentation_file_watcher))
+
+presentation_file_watcher.directoryChanged.connect(
+    lambda directory_name: monitor.on_directory_changed(
+        directory_name, presentation_md_file, presentation_file_watcher))
+
 
 layout = QtWidgets.QVBoxLayout()
 web_view = QtWebKitWidgets.QWebView()
@@ -39,24 +52,32 @@ mode_checkbox.setText('Edit mode')
 mode_checkbox.stateChanged.connect(lambda state: gui.mode_change(state,
                                                              main_widget))
 
+black_radio = QtWidgets.QRadioButton('Black')
+black_radio.clicked.connect(lambda state: monitor.refresh_presentation(
+    presentation_md_file,
+    web_view,
+    presentation_file_watcher,
+    'black'))
 
-layout.addWidget(mode_checkbox)
+white_radio = QtWidgets.QRadioButton('White')
+white_radio.setChecked(True)
+
+lower_window_layout = QtWidgets.QHBoxLayout()
+lower_window_layout.addWidget(mode_checkbox)
+lower_window_layout.addWidget(white_radio)
+lower_window_layout.addWidget(black_radio)
+
+
+group = QtWidgets.QGroupBox()
+group.setLayout(lower_window_layout)
+
+
+layout.addWidget(group)
 
 main_widget.show()
 
 
-presentation_file_watcher = QtCore.QFileSystemWatcher(
-    [presentation_md_file,
-     os.path.dirname(presentation_md_file)])
 
-presentation_file_watcher.fileChanged.connect(
-    lambda file_name: monitor.on_file_changed(file_name, [web_view],
-                                              presentation_html,
-                                              presentation_file_watcher))
-
-presentation_file_watcher.directoryChanged.connect(
-    lambda directory_name: monitor.on_directory_changed(
-        directory_name, presentation_md_file, presentation_file_watcher))
 
 main_widget.setWindowTitle('Slidown: ' + os.path.basename(presentation_md_file))
 

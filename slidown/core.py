@@ -4,7 +4,7 @@ import os
 import pypandoc
 import bs4
 
-def generate_presentation_html(presentation_md_file):
+def generate_presentation_html(presentation_md_file, theme='white'):
     reveal_js_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                               'reveal.js')
 
@@ -12,7 +12,7 @@ def generate_presentation_html(presentation_md_file):
                             'revealjs',
                             extra_args=['-V', 'revealjs-url:' + reveal_js_path,
                                         '--self-contained',
-                                        '-V', 'theme:solarized'])
+                                        '-V', 'theme:' + theme])
 
 def get_changed_slide(old_html, new_html):
     soup_old = bs4.BeautifulSoup(old_html, 'html.parser')
