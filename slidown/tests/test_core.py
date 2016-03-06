@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import os
-from nose.tools import assert_equals
+from nose.tools import assert_equals, raises
 
 from .. import core
 
+@raises(RuntimeError)
 def test_get_changed_slide_with_same_html():
     html1 = '\
 <section class="slide">\
@@ -16,7 +17,7 @@ def test_get_changed_slide_with_same_html():
 <h1> A title </h1>\
 </section>\
 '
-    assert_equals(-1, core.get_changed_slide(html1, html2))
+    core.get_changed_slide(html1, html2)
 
 def test_get_changed_slide_simple():
     html0 = '\

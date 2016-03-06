@@ -6,6 +6,9 @@ import core
 def on_file_changed(file_name, web_views, old_html, watcher):
     if os.path.isfile(file_name):
         new_presentation_html = core.generate_presentation_html(file_name)
+        if new_presentation_html == old_html:
+            return
+
         for web_view in web_views:
             number_of_slides = web_view.page().mainFrame().evaluateJavaScript(
                 'Reveal.getTotalSlides();')

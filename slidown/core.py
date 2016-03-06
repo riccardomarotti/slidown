@@ -28,4 +28,7 @@ def get_changed_slide(old_html, new_html):
             different_slide_index = index
             break
 
+    if different_slide_index == -1:
+        raise(RuntimeError('Slides have no differences.'))
+
     return different_slide_index
