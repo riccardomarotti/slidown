@@ -11,6 +11,7 @@ from PyQt5 import QtWebKitWidgets
 
 import monitor
 import core
+import gui
 
 
 app = QtWidgets.QApplication(sys.argv)
@@ -24,10 +25,23 @@ if not presentation_md_file:
 
 presentation_html = core.generate_presentation_html(presentation_md_file)
 
-main_widget = QtWebKitWidgets.QWebView()
-main_widget.setHtml(presentation_html)
 
-#main_widget.loadFinished.connect(lambda: main_widget.page().mainFrame().evaluateJavaScript('Reveal.toggleOverview();'))
+layout = QtWidgets.QVBoxLayout()
+web_view = QtWebKitWidgets.QWebView()
+web_view.setHtml(presentation_html)
+
+layout.addWidget(web_view)
+main_widget = QtWidgets.QWidget()
+main_widget.setLayout(layout)
+
+mode_checkbox = QtWidgets.QCheckBox()
+mode_checkbox.setText('Edit mode')
+mode_checkbox.stateChanged.connect(lambda state: gui.mode_change(state,
+                                                             main_widget))
+
+
+layout.addWidget(mode_checkbox)
+
 main_widget.show()
 
 
@@ -36,7 +50,7 @@ presentation_file_watcher = QtCore.QFileSystemWatcher(
      os.path.dirname(presentation_md_file)])
 
 presentation_file_watcher.fileChanged.connect(
-    lambda file_name: monitor.on_file_changed(file_name, [main_widget],
+    lambda file_name: monitor.on_file_changed(file_name, [web_view],
                                               presentation_html,
                                               presentation_file_watcher))
 
@@ -44,5 +58,6 @@ presentation_file_watcher.directoryChanged.connect(
     lambda directory_name: monitor.on_directory_changed(
         directory_name, presentation_md_file, presentation_file_watcher))
 
+main_widget.setWindowTitle('Slidown: ' + os.path.basename(presentation_md_file))
 
 sys.exit(app.exec_())
