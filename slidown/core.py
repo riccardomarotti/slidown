@@ -12,7 +12,7 @@ def generate_presentation_html(presentation_md_file, theme='white'):
                             'revealjs',
                             extra_args=['-V', 'revealjs-url:' + reveal_js_path,
                                         '--self-contained',
-                                        '-V', 'transition:zoom',
+                                        '-V', 'transition:slide',
                                         '-V', 'theme:' + theme])
 
 def get_changed_slide(old_html, new_html):
