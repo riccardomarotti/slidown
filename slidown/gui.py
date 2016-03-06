@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from PyQt5 import QtCore
+from PyQt5 import QtWidgets
+
+import monitor
 
 def full_screen_change(mode, main_widget):
     {QtCore.Qt.Checked: main_widget.showFullScreen,
@@ -16,3 +19,19 @@ def mode_change(mode, main_widget):
     main_widget.setWindowFlags(window_flags)
 
     main_widget.show()
+
+def theme_radio_button(theme,
+                       presentation_md_file,
+                       web_view,
+                       presentation_file_watcher,
+                       checked=False):
+    radio = QtWidgets.QRadioButton(theme)
+    radio.clicked.connect(lambda state: monitor.refresh_presentation(
+        presentation_md_file,
+        web_view,
+        presentation_file_watcher,
+        theme.lower()))
+    radio.setChecked(checked)
+
+
+    return radio
