@@ -38,4 +38,4 @@ def get_changed_slide(old_html, new_html):
             vertical_index = 0
             horizontal_index += 1
 
-    return (horizontal_index, vertical_index)
+    return horizontal_index, vertical_index

@@ -34,7 +34,6 @@ def on_directory_changed(directory_name, file_name_to_verify, watcher):
         watcher.addPath(file_name_to_verify)
 
 def on_web_view_load(web_view, page_number):
-    print(str(page_number))
     web_view.page().mainFrame().evaluateJavaScript(
         'Reveal.slide' + str(page_number) + ';')
     web_view.loadFinished.disconnect()
