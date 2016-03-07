@@ -51,7 +51,7 @@ main_widget.setLayout(layout)
 mode_checkbox = QtWidgets.QCheckBox()
 mode_checkbox.setText('Edit mode')
 mode_checkbox.stateChanged.connect(lambda state: gui.mode_change(state,
-                                                             main_widget))
+                                                                 main_widget))
 
 themes = ['White', 'Black', 'League', 'Beige', 'Sky',
           'Night', 'Serif', 'Simple', 'Solarized']
@@ -72,6 +72,7 @@ export_button = QtWidgets.QPushButton('Export as HTML')
 
 
 def export_html(presentation_md_file):
+    gui.unset_edit_mode(main_widget)
     output_file_name = os.path.splitext(presentation_md_file)[0] + '.html'
 
     presentation_html_file = QtWidgets.QFileDialog.getSaveFileName(None,
