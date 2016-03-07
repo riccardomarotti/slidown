@@ -6,6 +6,7 @@ import core
 def on_file_changed(file_name, web_view, old_html, watcher, theme='white'):
     if os.path.isfile(file_name):
         new_presentation_html = core.generate_presentation_html(file_name, theme)
+        open('output.html', 'w').write(new_presentation_html)
         if new_presentation_html == old_html:
             return
 
@@ -33,8 +34,9 @@ def on_directory_changed(directory_name, file_name_to_verify, watcher):
         watcher.addPath(file_name_to_verify)
 
 def on_web_view_load(web_view, page_number):
+    print(str(page_number))
     web_view.page().mainFrame().evaluateJavaScript(
-        'Reveal.slide(' + str(page_number) + ');')
+        'Reveal.slide' + str(page_number) + ';')
     web_view.loadFinished.disconnect()
 
 

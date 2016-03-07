@@ -19,20 +19,23 @@ def get_changed_slide(old_html, new_html):
     soup_old = bs4.BeautifulSoup(old_html, 'html.parser')
     soup_new = bs4.BeautifulSoup(new_html, 'html.parser')
 
+    if old_html == new_html:
+        raise(RuntimeError('Slides have no differences.'))
+
     slides_old = soup_old.find_all('section', attrs={'class': 'slide'})
     slides_new = soup_new.find_all('section', attrs={'class': 'slide'})
 
-    different_slide_index = -1
+    horizontal_index = 0
+    vertical_index = 0
 
-    if len(slides_new) != len(slides_old):
-        return len(slides_new) - 1
-
-    for index, slide_new in enumerate(slides_new):
-        if slide_new != slides_old[index]:
-            different_slide_index = index
+    for index, slide in enumerate(slides_new):
+        if index >= len(slides_old) or slide != slides_old[index]:
             break
 
-    if different_slide_index == -1:
-        raise(RuntimeError('Slides have no differences.'))
+        if slide.parent.name == 'section':
+            vertical_index += 1
+        else:
+            vertical_index = 0
+            horizontal_index += 1
 
-    return different_slide_index
+    return (horizontal_index, vertical_index)
