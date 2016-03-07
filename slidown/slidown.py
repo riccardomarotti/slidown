@@ -72,9 +72,12 @@ export_button = QtWidgets.QPushButton('Export as HTML')
 
 
 def export_html(presentation_md_file):
+    output_file_name = os.path.splitext(presentation_md_file)[0] + '.html'
+
     presentation_html_file = QtWidgets.QFileDialog.getSaveFileName(None,
                                                                    'Export presentation',
-                                                                   os.path.expanduser('~'))[0]
+                                                                   output_file_name,
+                                                                   'Markdown files (*.md)')[0]
     if not presentation_html_file:
         return
 
