@@ -18,7 +18,8 @@ app = QtWidgets.QApplication(sys.argv)
 
 presentation_md_file = QtWidgets.QFileDialog.getOpenFileName(None,
                                                              'Open presentation',
-                                                             os.path.expanduser('~'))[0]
+                                                             os.path.expanduser('~'),
+                                                             'Markdown files (*.md)')[0]
 
 if not presentation_md_file:
     sys.exit(0)
@@ -91,11 +92,7 @@ group.setLayout(lower_window_layout)
 
 layout.addWidget(group)
 
-main_widget.show()
-
-
-
-
 main_widget.setWindowTitle('Slidown: ' + os.path.basename(presentation_md_file))
+main_widget.show()
 
 sys.exit(app.exec_())
