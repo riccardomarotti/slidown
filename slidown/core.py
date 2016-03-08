@@ -25,17 +25,33 @@ def get_changed_slide(old_html, new_html):
     slides_old = soup_old.find_all('section', attrs={'class': 'slide'})
     slides_new = soup_new.find_all('section', attrs={'class': 'slide'})
 
-    horizontal_index = 0
-    vertical_index = 0
+    different_slide_index = 0
 
     for index, slide in enumerate(slides_new):
         if index >= len(slides_old) or slide != slides_old[index]:
+            different_slide_index = index
             break
 
-        if slide.parent.name == 'section':
-            vertical_index += 1
-        else:
-            vertical_index = 0
-            horizontal_index += 1
+    horizontal_index = 0
+    vertical_index = 0
 
-    return horizontal_index, vertical_index
+    first = True
+    for index in range(0, different_slide_index+1):
+        if slides_new[index].parent.name != 'section':
+            horizontal_index += 1
+            vertical_index = 0
+            first = True
+        elif index > 0 and slides_new[index-1].nextSibling is not slides_new[index]:
+            horizontal_index += 1
+            vertical_index = 0
+            first = True
+        else:
+            if first:
+                horizontal_index += 1
+                first = False
+            else:
+                vertical_index += 1
+
+
+    print(horizontal_index-1, vertical_index)
+    return horizontal_index-1, vertical_index
