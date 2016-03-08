@@ -49,9 +49,15 @@ def get_changed_with_vertical(soup_old, soup_new):
     if len(slides_old) == 0 or len(slides_new) == 0:
         return -1, -1
 
+    if len(slides_new) > len(slides_new):
+        return len(slides_new), 0
+
     for hindex, parent_slide in enumerate(slides_new):
         for vindex, child_slide in enumerate(list(parent_slide.children)):
-            if child_slide != list(slides_old[hindex].children)[vindex]:
+            if hindex >= len(slides_old):
+                return hindex, 0
+            children = list(slides_old[hindex].children)
+            if vindex >= len(children) or child_slide != children[vindex]:
                 return hindex, vindex
 
 
