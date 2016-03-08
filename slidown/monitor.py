@@ -2,8 +2,9 @@
 
 import os
 import core
+from PyQt5 import QtCore
 
-def on_file_changed(file_name, web_view, old_html, watcher, theme='white'):
+def on_file_changed(file_name, web_view, old_html, watcher, output_file_name, theme='white'):
     if os.path.isfile(file_name):
         new_presentation_html = core.generate_presentation_html(file_name, theme)
         open('output.html', 'w').write(new_presentation_html)
@@ -17,7 +18,7 @@ def on_file_changed(file_name, web_view, old_html, watcher, theme='white'):
                                      core.get_changed_slide(
                                          old_html,
                                          new_presentation_html)))
-        web_view.setHtml(new_presentation_html)
+        web_view.load(QtCore.QUrl('file://' + output_file_name))
 
         watcher.fileChanged.disconnect()
         watcher.fileChanged.connect(
@@ -25,7 +26,10 @@ def on_file_changed(file_name, web_view, old_html, watcher, theme='white'):
                                               web_view,
                                               new_presentation_html,
                                               watcher,
+                                              output_file_name,
                                               theme))
+
+        open(output_file_name, 'w').write(new_presentation_html)
 
 
 
@@ -39,13 +43,15 @@ def on_web_view_load(web_view, page_number):
     web_view.loadFinished.disconnect()
 
 
-def refresh_presentation(file_name, web_view, watcher, theme):
+def refresh_presentation(file_name, web_view, watcher, output_file_name, theme):
     html = core.generate_presentation_html(file_name, theme)
-    web_view.setHtml(html)
+    open(output_file_name, 'w').write(html)
+    web_view.load(QtCore.QUrl('file://' + output_file_name))
     watcher.fileChanged.disconnect()
     watcher.fileChanged.connect(
             lambda file_name: on_file_changed(file_name,
                                               web_view,
                                               html,
                                               watcher,
+                                              output_file_name,
                                               theme))

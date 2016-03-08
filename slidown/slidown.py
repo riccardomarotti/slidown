@@ -25,6 +25,8 @@ if not presentation_md_file:
     sys.exit(0)
 
 presentation_html = core.generate_presentation_html(presentation_md_file)
+presentation_html_file = os.path.splitext(presentation_md_file)[0] + '.html'
+open(presentation_html_file, 'w').write(presentation_html)
 
 presentation_file_watcher = QtCore.QFileSystemWatcher(
     [presentation_md_file,
@@ -33,7 +35,8 @@ presentation_file_watcher = QtCore.QFileSystemWatcher(
 presentation_file_watcher.fileChanged.connect(
     lambda file_name: monitor.on_file_changed(file_name, web_view,
                                               presentation_html,
-                                              presentation_file_watcher))
+                                              presentation_file_watcher,
+                                              presentation_html_file))
 
 presentation_file_watcher.directoryChanged.connect(
     lambda directory_name: monitor.on_directory_changed(
@@ -42,7 +45,7 @@ presentation_file_watcher.directoryChanged.connect(
 
 layout = QtWidgets.QVBoxLayout()
 web_view = QtWebKitWidgets.QWebView()
-web_view.setHtml(presentation_html)
+web_view.load(QtCore.QUrl('file://' + presentation_html_file))
 
 layout.addWidget(web_view)
 main_widget = QtWidgets.QWidget()
@@ -65,30 +68,9 @@ themes_combo.activated.connect(lambda index: monitor.refresh_presentation(
         presentation_md_file,
         web_view,
         presentation_file_watcher,
+        presentation_html_file,
         themes[index].lower()))
 lower_window_layout.addWidget(themes_combo)
-
-export_button = QtWidgets.QPushButton('Export as HTML')
-
-
-def export_html(presentation_md_file):
-    gui.unset_edit_mode(main_widget)
-    output_file_name = os.path.splitext(presentation_md_file)[0] + '.html'
-
-    presentation_html_file = QtWidgets.QFileDialog.getSaveFileName(None,
-                                                                   'Export presentation',
-                                                                   output_file_name,
-                                                                   'Markdown files (*.md)')[0]
-    if not presentation_html_file:
-        return
-
-    output = core.generate_presentation_html(presentation_md_file)
-    open(presentation_html_file, 'w').write(output)
-
-
-export_button.clicked.connect(lambda: export_html(presentation_md_file))
-lower_window_layout.addWidget(export_button)
-
 
 group = QtWidgets.QGroupBox()
 group.setLayout(lower_window_layout)
