@@ -91,3 +91,28 @@ def test_more_complex():
 '
 
     assert_equals((3,0), core.get_changed_slide(html1, html2))
+
+def test_double_vertical():
+    html1 = '\
+<section class="slide">Single Horizontal Slide</section>\
+<section>\
+    <section class="slide">Vertical Slide 1</section>\
+    <section class="slide">Vertical Slide 2</section>\
+<section>\
+    <section class="slide">Vertical Slide 3</section>\
+    <section class="slide">Vertical Slide 4</section>\
+</section>\
+'
+
+    html2 = '\
+<section class="slide">Single Horizontal Slide</section>\
+<section>\
+    <section class="slide">Vertical Slide 1</section>\
+    <section class="slide">Vertical Slide 2</section>\
+<section>\
+    <section class="slide">Vertical Slide 3</section>\
+    <section class="slide">Vertical Slide 4 different</section>\
+</section>\
+'
+
+    assert_equals((2,1), core.get_changed_slide(html1, html2))

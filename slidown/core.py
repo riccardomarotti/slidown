@@ -22,36 +22,37 @@ def get_changed_slide(old_html, new_html):
     if old_html == new_html:
         raise(RuntimeError('Slides have no differences.'))
 
+    horizontal_index, vertical_index = get_changed_with_vertical(soup_old, soup_new)
+
+    if horizontal_index != -1:
+        return horizontal_index, vertical_index
+
     slides_old = soup_old.find_all('section', attrs={'class': 'slide'})
     slides_new = soup_new.find_all('section', attrs={'class': 'slide'})
 
-    different_slide_index = 0
+    if len(slides_new) > len(slides_old):
+        return len(slides_new), 0
+
+    horizontal_index = 0
 
     for index, slide in enumerate(slides_new):
         if index >= len(slides_old) or slide != slides_old[index]:
-            different_slide_index = index
+            horizontal_index = index
             break
 
-    horizontal_index = 0
-    vertical_index = 0
+    return horizontal_index, 0
 
-    first = True
-    for index in range(0, different_slide_index+1):
-        if slides_new[index].parent.name != 'section':
-            horizontal_index += 1
-            vertical_index = 0
-            first = True
-        elif index > 0 and slides_new[index-1].nextSibling is not slides_new[index]:
-            horizontal_index += 1
-            vertical_index = 0
-            first = True
-        else:
-            if first:
-                horizontal_index += 1
-                first = False
-            else:
-                vertical_index += 1
+def get_changed_with_vertical(soup_old, soup_new):
+    slides_old = soup_old.find_all('section', attrs={'class': None})
+    slides_new = soup_new.find_all('section', attrs={'class': None})
+
+    if len(slides_old) == 0 or len(slides_new) == 0:
+        return -1, -1
+
+    for hindex, parent_slide in enumerate(slides_new):
+        for vindex, child_slide in enumerate(list(parent_slide.children)):
+            if child_slide != list(slides_old[hindex].children)[vindex]:
+                return hindex, vindex
 
 
-    print(horizontal_index-1, vertical_index)
-    return horizontal_index-1, vertical_index
+    return 0,0
