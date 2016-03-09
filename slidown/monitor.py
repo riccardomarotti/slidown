@@ -7,7 +7,6 @@ from PyQt5 import QtCore
 def on_file_changed(file_name, web_view, old_html, watcher, output_file_name, theme='white'):
     if os.path.isfile(file_name):
         new_presentation_html = core.generate_presentation_html(file_name, theme)
-        open('output.html', 'w').write(new_presentation_html)
         if new_presentation_html == old_html:
             return
 
