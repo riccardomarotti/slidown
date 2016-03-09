@@ -39,80 +39,106 @@ def test_second_slide_different():
     assert_equals((1,0), core.get_changed_slide(html1, html2))
 
 def test_second_vertical_slide_different():
-    html1 = '\
-<section class="slide">Single Horizontal Slide</section>\
-<section>\
-    <section class="slide">Vertical Slide 1</section>\
-    <section class="slide">Vertical Slide 2</section>\
-</section>\
+    md1 ='\
+# Single horizontal slide\
+\n\n\
+## Vertical Slide 1\
+\n\n\
+## Vertical Slide 2\
 '
+    html1 = core._generate_presentation_html(md1)
 
-    html2 = '\
-<section class="slide">Single Horizontal Slide</section>\
-<section>\
-    <section class="slide">Vertical Slide 1</section>\
-    <section class="slide">Vertical different Slide 2</section>\
-</section>\
+    md2 = '\
+# Single horizontal slide\
+\n\n\
+## Vertical Slide 1\
+\n\n\
+## Vertical different Slide 2\
+\
 '
-    assert_equals((1,1), core.get_changed_slide(html1, html2))
+    html2 = core._generate_presentation_html(md2)
+
+    assert_equals((0,2), core.get_changed_slide(html1, html2))
 
 def test_added_new_slide():
-    html1 = ''
-    html2 = '\
-<section class="slide">\
-<h1> A title </h1>\
-</section>\
-'
+    html1 = core._generate_presentation_html('')
+    html2 = core._generate_presentation_html('## A title')
 
     assert_equals((0,0), core.get_changed_slide(html1, html2))
 
 
-def test_more_complex():
-    html1 = '\
-<section class="slide">Single Horizontal Slide</section>\
-<section>\
-    <section class="slide">Vertical Slide 1</section>\
-    <section class="slide">Vertical Slide 2</section>\
-    <section class="slide">Vertical Slide 3</section>\
-</section>\
-<section class="slide">Horizontal Slide 2</section>\
-<section class="slide">Horizontal Slide 3</section>\
-'
-
-    html2 = '\
-<section class="slide">Single Horizontal Slide</section>\
-<section>\
-    <section class="slide">Vertical Slide 1</section>\
-    <section class="slide">Vertical Slide 2</section>\
-    <section class="slide">Vertical Slide 3</section>\
-</section>\
-<section class="slide">Horizontal Slide 2</section>\
-<section class="slide">Horizontal Slide 3 different</section>\
-'
-
-    assert_equals((3,0), core.get_changed_slide(html1, html2))
-
 def test_double_vertical():
-    html1 = '\
-<section class="slide">Single Horizontal Slide</section>\
-<section>\
-    <section class="slide">Vertical Slide 1</section>\
-    <section class="slide">Vertical Slide 2</section>\
-<section>\
-    <section class="slide">Vertical Slide 3</section>\
-    <section class="slide">Vertical Slide 4</section>\
-</section>\
+    md1 = '\
+# First Vertical Slide 1\
+\n\n\
+## Vertical Slide 1 1\
+\n\n\
+## Vertical Slide 1 2\
+\n\n\
+## Vertical Slide 1 3\
+\n\n\
+# First Vertical Slide 2\
+\n\n\
+## Vertical Slide 2 1\
+\n\n\
+## Vertical Slide 2 2\
+\n\n\
+## Vertical Slide 2 3\
 '
+    html1 = core._generate_presentation_html(md1)
 
-    html2 = '\
-<section class="slide">Single Horizontal Slide</section>\
-<section>\
-    <section class="slide">Vertical Slide 1</section>\
-    <section class="slide">Vertical Slide 2</section>\
-<section>\
-    <section class="slide">Vertical Slide 3</section>\
-    <section class="slide">Vertical Slide 4 different</section>\
-</section>\
+    md2 = '\
+# First Vertical Slide 1\
+\n\n\
+## Vertical Slide 1 1\
+\n\n\
+## Vertical Slide 1 2\
+\n\n\
+## Vertical Slide 1 3\
+\n\n\
+# First Vertical Slide 2\
+\n\n\
+## Vertical Slide 2 1\
+\n\n\
+## Vertical Different Slide 2 2\
+\n\n\
+## Vertical Slide 2 3\
 '
+    html2 = core._generate_presentation_html(md2)
 
-    assert_equals((2,1), core.get_changed_slide(html1, html2))
+    assert_equals((1, 2), core.get_changed_slide(html1, html2))
+
+
+
+def test_more_complex():
+    md1 = '\
+# Horizontal slide 1\
+\n\n\
+## Vertical Slide 1\
+\n\n\
+## Vertical Slide 2\
+\n\n\
+## Vertical Slide 3\
+\n\n\
+# Horizontal slide 2\
+\n\n\
+# Horizontal slide 3\
+'
+    html1 = core._generate_presentation_html(md1)
+
+    md2 = '\
+# Horizontal slide 1\
+\n\n\
+## Vertical Slide 1\
+\n\n\
+## Vertical Slide 2\
+\n\n\
+## Vertical Slide 3\
+\n\n\
+# Horizontal slide 2\
+\n\n\
+# Horizontal different slide 3\
+'
+    html2 = core._generate_presentation_html(md2)
+
+    assert_equals((2,0), core.get_changed_slide(html1, html2))

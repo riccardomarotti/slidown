@@ -4,16 +4,21 @@ import os
 import pypandoc
 import bs4
 
-def generate_presentation_html(presentation_md_file, theme='white'):
+def _generate_presentation_html(presentation_md, theme='white'):
     reveal_js_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                               'reveal.js')
 
-    return pypandoc.convert(presentation_md_file,
+    return pypandoc.convert(presentation_md,
                             'revealjs',
                             extra_args=['-V', 'revealjs-url:' + reveal_js_path,
                                         '--self-contained',
                                         '-V', 'transition:slide',
-                                        '-V', 'theme:' + theme])
+                                        '-V', 'theme:' + theme],
+                            format='md')
+
+def generate_presentation_html(presentation_md_file, theme='white'):
+    md = open(presentation_md_file).read()
+    return _generate_presentation_html(md, theme)
 
 def get_changed_slide(old_html, new_html):
     soup_old = bs4.BeautifulSoup(old_html, 'html.parser')
@@ -22,10 +27,13 @@ def get_changed_slide(old_html, new_html):
     if old_html == new_html:
         raise(RuntimeError('Slides have no differences.'))
 
-    horizontal_index, vertical_index = get_changed_with_vertical(soup_old, soup_new)
+    horizontal_index, vertical_index = get_changed_with_vertical(soup_old,
+                                                                 soup_new)
 
     if horizontal_index != -1:
         return horizontal_index, vertical_index
+
+
 
     slides_old = soup_old.find_all('section', attrs={'class': 'slide'})
     slides_new = soup_new.find_all('section', attrs={'class': 'slide'})
@@ -43,8 +51,10 @@ def get_changed_slide(old_html, new_html):
     return horizontal_index, 0
 
 def get_changed_with_vertical(soup_old, soup_new):
-    slides_old = soup_old.find_all('section', attrs={'class': None})
-    slides_new = soup_new.find_all('section', attrs={'class': None})
+    slides_old = [slide for slide in soup_old.find_all('section', attrs={'class': None})
+                  if slide.parent.name != 'section']
+    slides_new = [slide for slide in soup_new.find_all('section', attrs={'class': None})
+                  if slide.parent.name != 'section']
 
     if len(slides_old) == 0 or len(slides_new) == 0:
         return -1, -1
