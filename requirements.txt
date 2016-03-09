@@ -1,3 +1,4 @@
 pypandoc
 beautifulsoup4
+appdirs
 nose

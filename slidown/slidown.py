@@ -2,11 +2,11 @@
 
 import sys
 import os
-import threading
+import json
+import appdirs
 
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore
-from PyQt5 import QtGui
 from PyQt5 import QtWebKitWidgets
 
 import monitor
@@ -16,13 +16,37 @@ import gui
 
 app = QtWidgets.QApplication(sys.argv)
 
-presentation_md_file = QtWidgets.QFileDialog.getOpenFileName(None,
-                                                             'Open presentation',
-                                                             os.path.expanduser('~'),
-                                                             'Markdown files (*.md)')[0]
+if len(sys.argv) == 2:
+    presentation_md_file = os.path.abspath(sys.argv[1])
+else:
+    config_file = os.path.join(appdirs.user_config_dir('slidown'),
+                               'config.json')
+    if os.path.isfile(config_file):
+        with open(config_file, 'r') as f:
+            configuration = json.load(f)
+    else:
+        basedir = os.path.dirname(config_file)
+        if not os.path.exists(basedir):
+            os.makedirs(basedir)
+        with open(config_file, 'w') as f:
+            f.write('{}')
+
+        configuration = {}
+
+    if not 'last_presentation' in configuration:
+        presentation_md_file = QtWidgets.QFileDialog.getOpenFileName(None,
+                                                                     'Open presentation',
+                                                                     os.path.expanduser('~'),
+                                                                     'Markdown files (*.md)')[0]
+    else:
+        presentation_md_file = configuration['last_presentation']
 
 if not presentation_md_file:
     sys.exit(0)
+
+configuration['last_presentation'] = presentation_md_file
+with open(config_file, 'w') as f:
+    json.dump(configuration, f)
 
 presentation_html = core.generate_presentation_html(presentation_md_file)
 presentation_html_file = os.path.splitext(presentation_md_file)[0] + '.html'
