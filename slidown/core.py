@@ -53,13 +53,15 @@ def get_changed_with_vertical(soup_old, soup_new):
     if new_slide_added:
         return len(slides_new), 0
 
-    for hindex, parent_slide in enumerate(slides_new):
-        children = list(slides_old[hindex].children)
-        for vindex, child_slide in enumerate(list(parent_slide.children)):
-            if vindex >= len(children) or child_slide != children[vindex]:
-                return hindex, vindex
+    indexes = [(hindex, vindex) for hindex, parent_slide in enumerate(slides_new)
+            for vindex, child_slide in enumerate(list(parent_slide.children))
+         if len(slides_old) <= hindex
+            or vindex >= len(list(slides_old[hindex].children))
+            or child_slide != list(slides_old[hindex].children
+            or len(parent_slide.children) <= vindex)[vindex]]
 
-    return 0,0
+    return indexes[0]
+
 
 def get_vertical_slides(soup):
     return [slide for slide in soup.find_all('section', attrs={'class': None})

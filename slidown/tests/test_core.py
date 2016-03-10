@@ -142,3 +142,53 @@ def test_more_complex():
     html2 = core._generate_presentation_html(md2)
 
     assert_equals((2,0), core.get_changed_slide(html1, html2))
+
+def test_add_new_horizontal():
+    md1 = '\
+# Horizontal slide 1\
+\n\n\
+## Vertical Slide 1\
+\n\n\
+## Vertical Slide 2\
+\n\n\
+'
+    html1 = core._generate_presentation_html(md1)
+
+    md2 = '\
+# Horizontal slide 1\
+\n\n\
+## Vertical Slide 1\
+\n\n\
+## Vertical Slide 2\
+\n\n\
+# New Horizontal\
+\n\n\
+'
+    html2 = core._generate_presentation_html(md2)
+
+    assert_equals((1, 0), core.get_changed_slide(html1, html2))
+
+def test_delete_new_horizontal():
+    md1 = '\
+# Horizontal slide 1\
+\n\n\
+## Vertical Slide 1\
+\n\n\
+## Vertical Slide 2\
+\n\n\
+# New Horizontal\
+\n\n\
+'
+    html1 = core._generate_presentation_html(md1)
+
+    md2 = '\
+# Horizontal slide 1\
+\n\n\
+## Vertical Slide 1\
+\n\n\
+## Vertical Slide 2\
+\n\n\
+'
+    html2 = core._generate_presentation_html(md2)
+
+    assert_equals((1, 0), core.get_changed_slide(html1, html2))
