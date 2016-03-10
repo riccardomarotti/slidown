@@ -33,13 +33,8 @@ def get_changed_slide(old_html, new_html):
     if horizontal_index != -1:
         return horizontal_index, vertical_index
 
-
-
     slides_old = soup_old.find_all('section', attrs={'class': 'slide'})
     slides_new = soup_new.find_all('section', attrs={'class': 'slide'})
-
-    if len(slides_new) > len(slides_old):
-        return len(slides_new), 0
 
     horizontal_index = 0
 
@@ -51,24 +46,26 @@ def get_changed_slide(old_html, new_html):
     return horizontal_index, 0
 
 def get_changed_with_vertical(soup_old, soup_new):
-    slides_old = [slide for slide in soup_old.find_all('section', attrs={'class': None})
-                  if slide.parent.name != 'section']
-    slides_new = [slide for slide in soup_new.find_all('section', attrs={'class': None})
-                  if slide.parent.name != 'section']
+    slides_old = get_vertical_slides(soup_old)
+    slides_new = get_vertical_slides(soup_new)
 
-    if len(slides_old) == 0 or len(slides_new) == 0:
+    no_vertical_slides =  len(slides_old) == 0 or len(slides_new) == 0
+    if no_vertical_slides:
         return -1, -1
 
-    if len(slides_new) > len(slides_new):
+    new_slide_added = len(slides_new) > len(slides_new)
+    if new_slide_added:
         return len(slides_new), 0
 
     for hindex, parent_slide in enumerate(slides_new):
         for vindex, child_slide in enumerate(list(parent_slide.children)):
-            if hindex >= len(slides_old):
-                return hindex, 0
             children = list(slides_old[hindex].children)
             if vindex >= len(children) or child_slide != children[vindex]:
                 return hindex, vindex
 
 
     return 0,0
+
+def get_vertical_slides(soup):
+    return [slide for slide in soup.find_all('section', attrs={'class': None})
+                  if slide.parent.name != 'section']
