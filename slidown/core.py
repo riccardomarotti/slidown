@@ -4,11 +4,11 @@ import os
 import pypandoc
 import bs4
 
-def _generate_presentation_html(presentation_md, theme='white'):
+def _generate_presentation_html(presentation_md_text, theme='white'):
     reveal_js_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                               'reveal.js')
 
-    return pypandoc.convert(presentation_md,
+    return pypandoc.convert(presentation_md_text,
                             'revealjs',
                             extra_args=['-V', 'revealjs-url:' + reveal_js_path,
                                         '--self-contained',
