@@ -37,7 +37,10 @@ def get_changed_slide(old_html, new_html):
     slides_new = soup_new.find_all('section', attrs={'class': 'slide'})
 
     changed_slides_indexes = [index for index, slide in enumerate(slides_new)
-            if index >= len(slides_old) or slide != slides_old[index]]
+                              if index >= len(slides_old)
+                              or slide.get_text().strip() != slides_old[index].get_text().strip()]
+
+    print(changed_slides_indexes)
 
     return changed_slides_indexes[0], 0
 
@@ -57,8 +60,7 @@ def get_changed_with_vertical(soup_old, soup_new):
                for vindex, child_slide in enumerate(list(parent_slide.children))
                if len(slides_old) <= hindex
                or vindex >= len(list(slides_old[hindex].children))
-               or child_slide != list(slides_old[hindex].children
-               or len(parent_slide.children) <= vindex) [vindex]]
+               or child_slide != list(slides_old[hindex].children or len(parent_slide.children) <= vindex)[vindex]]
 
     return indexes[0]
 

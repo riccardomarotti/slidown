@@ -192,3 +192,30 @@ def test_delete_last_horizontal():
     html2 = core._generate_presentation_html(md2)
 
     assert_equals((1, 0), core.get_changed_slide(html1, html2))
+
+
+def test_bug():
+
+    md1 = """
+## Title 1
+
+## Title 2
+
+## Title 3
+
+"""
+    html1 = core._generate_presentation_html(md1)
+
+    md2 = """
+## Title 1
+
+## Title 2
+
+different text
+
+## Title 3
+
+"""
+    html2 = core._generate_presentation_html(md2)
+
+    assert_equals((1,0), core.get_changed_slide(html1, html2))
