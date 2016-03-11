@@ -10,8 +10,6 @@ def on_file_changed(file_name, web_view, old_html, watcher, output_file_name, th
         if new_presentation_html == old_html:
             return
 
-        number_of_slides = web_view.page().mainFrame().evaluateJavaScript(
-            'Reveal.getTotalSlides();')
         web_view.loadFinished.connect(
             lambda: on_web_view_load(web_view,
                                      core.get_changed_slide(
