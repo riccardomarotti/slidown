@@ -57,7 +57,7 @@ def generate_window(presentation_html_file,
     main_widget.show()
 
 
-def get_presentation_file_name(start_dir):
+def ask_for_presentation_file_name(start_dir):
     return QtWidgets.QFileDialog.getOpenFileName(None,
                                           'Open presentation',
                                           start_dir,

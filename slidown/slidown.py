@@ -16,7 +16,7 @@ if len(sys.argv) == 2:
     presentation_md_file = os.path.abspath(sys.argv[1])
 else:
     if not 'last_presentation' in configuration:
-        presentation_md_file = gui.get_presentation_file_name(os.path.expanduser('~'))
+        presentation_md_file = gui.ask_for_presentation_file_name(os.path.expanduser('~'))
     else:
         presentation_md_file = configuration['last_presentation']
 
