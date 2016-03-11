@@ -53,42 +53,10 @@ presentation_file_watcher.directoryChanged.connect(
         directory_name, presentation_md_file, presentation_file_watcher))
 
 
-layout = QtWidgets.QVBoxLayout()
-web_view = QtWebKitWidgets.QWebView()
-web_view.load(QtCore.QUrl('file://' + presentation_html_file))
+gui.generate_window(presentation_html_file,
+                    presentation_md_file,
+                    presentation_file_watcher,
+                    'Slidown: ' + os.path.basename(presentation_md_file))
 
-layout.addWidget(web_view)
-main_widget = QtWidgets.QWidget()
-main_widget.setLayout(layout)
-
-mode_checkbox = QtWidgets.QCheckBox()
-mode_checkbox.setText('Edit mode')
-mode_checkbox.stateChanged.connect(lambda state: gui.mode_change(state,
-                                                                 main_widget))
-
-themes = ['White', 'Black', 'League', 'Beige', 'Sky',
-          'Night', 'Serif', 'Simple', 'Solarized']
-
-lower_window_layout = QtWidgets.QHBoxLayout()
-lower_window_layout.addWidget(mode_checkbox)
-
-themes_combo =QtWidgets.QComboBox()
-themes_combo.addItems(themes)
-themes_combo.activated.connect(lambda index: monitor.refresh_presentation(
-        presentation_md_file,
-        web_view,
-        presentation_file_watcher,
-        presentation_html_file,
-        themes[index].lower()))
-lower_window_layout.addWidget(themes_combo)
-
-group = QtWidgets.QGroupBox()
-group.setLayout(lower_window_layout)
-
-
-layout.addWidget(group)
-
-main_widget.setWindowTitle('Slidown: ' + os.path.basename(presentation_md_file))
-main_widget.show()
 
 sys.exit(app.exec_())
