@@ -27,9 +27,6 @@ def generate_window(presentation_html_file,
     mode_checkbox.stateChanged.connect(lambda state: mode_change(state,
                                                                  main_widget))
 
-    themes = ['White', 'Black', 'League', 'Beige', 'Sky',
-              'Night', 'Serif', 'Simple', 'Solarized']
-
     lower_window_layout = QtWidgets.QHBoxLayout()
     lower_window_layout.addWidget(mode_checkbox)
 
@@ -38,6 +35,8 @@ def generate_window(presentation_html_file,
                                                                          presentation_html,
                                                                          presentation_html_file)
 
+    themes = ['White', 'Black', 'League', 'Beige', 'Sky',
+              'Night', 'Serif', 'Simple', 'Solarized']
     themes_combo =QtWidgets.QComboBox()
     themes_combo.addItems(themes)
     themes_combo.activated.connect(lambda index: monitor.refresh_presentation(
