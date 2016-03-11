@@ -6,10 +6,12 @@ from PyQt5 import QtWebKitWidgets
 
 import monitor
 
-def generate_window(presentation_html_file,
+def generate_window(argv,
+                    presentation_html_file,
                     presentation_md_file,
                     presentation_file_watcher,
                     window_title):
+    app = QtWidgets.QApplication(argv)
     layout = QtWidgets.QVBoxLayout()
     web_view = QtWebKitWidgets.QWebView()
     web_view.load(QtCore.QUrl('file://' + presentation_html_file))
@@ -47,6 +49,15 @@ def generate_window(presentation_html_file,
 
     main_widget.setWindowTitle(window_title)
     main_widget.show()
+
+    return app
+
+
+def get_presentation_file_name(start_dir):
+    return QtWidgets.QFileDialog.getOpenFileName(None,
+                                          'Open presentation',
+                                          start_dir,
+                                          'Markdown files (*.md)')[0]
 
 def full_screen_change(mode, main_widget):
     {QtCore.Qt.Checked: main_widget.showFullScreen,
