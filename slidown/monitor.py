@@ -25,7 +25,12 @@ def create_presentation_file_watcher(presentation_md_file,
 
     return presentation_file_watcher
 
-def on_file_changed(file_name, web_view, old_html, watcher, output_file_name, theme='white'):
+def on_file_changed(file_name,
+                    web_view,
+                    old_html,
+                    watcher,
+                    output_file_name,
+                    theme='white'):
     if os.path.isfile(file_name):
         new_presentation_html = core.generate_presentation_html(file_name, theme)
         if new_presentation_html == old_html:
