@@ -168,7 +168,7 @@ def test_add_new_horizontal():
 
     assert_equals((1, 0), core.get_changed_slide(html1, html2))
 
-def test_delete_new_horizontal():
+def test_delete_last_horizontal():
     md1 = '\
 # Horizontal slide 1\
 \n\n\
