@@ -38,19 +38,7 @@ presentation_html = core.generate_presentation_html(presentation_md_file)
 presentation_html_file = os.path.splitext(presentation_md_file)[0] + '.html'
 open(presentation_html_file, 'w').write(presentation_html)
 
-presentation_file_watcher = QtCore.QFileSystemWatcher(
-    [presentation_md_file,
-     os.path.dirname(presentation_md_file)])
-
-presentation_file_watcher.fileChanged.connect(
-    lambda file_name: monitor.on_file_changed(file_name, web_view,
-                                              presentation_html,
-                                              presentation_file_watcher,
-                                              presentation_html_file))
-
-presentation_file_watcher.directoryChanged.connect(
-    lambda directory_name: monitor.on_directory_changed(
-        directory_name, presentation_md_file, presentation_file_watcher))
+presentation_file_watcher = monitor.create_filesystem_watcher(presentation_md_file)
 
 
 gui.generate_window(presentation_html_file,

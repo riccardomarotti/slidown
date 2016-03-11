@@ -4,6 +4,24 @@ import os
 import core
 from PyQt5 import QtCore
 
+def create_filesystem_watcher(presentation_md_file):
+    presentation_file_watcher = QtCore.QFileSystemWatcher(
+    [presentation_md_file,
+     os.path.dirname(presentation_md_file)])
+
+    presentation_file_watcher.fileChanged.connect(
+        lambda file_name: monitor.on_file_changed(file_name, web_view,
+                                                  presentation_html,
+                                                  presentation_file_watcher,
+                                                  presentation_html_file))
+
+
+    presentation_file_watcher.directoryChanged.connect(
+        lambda directory_name: monitor.on_directory_changed(
+            directory_name, presentation_md_file, presentation_file_watcher))
+
+    return presentation_file_watcher
+
 def on_file_changed(file_name, web_view, old_html, watcher, output_file_name, theme='white'):
     if os.path.isfile(file_name):
         new_presentation_html = core.generate_presentation_html(file_name, theme)
