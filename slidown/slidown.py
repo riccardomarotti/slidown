@@ -3,11 +3,12 @@
 import sys
 import os
 
-import monitor
 import core
 import gui
 import config
 
+
+app = gui.create_qt_application(sys.argv)
 
 configuration = config.get()
 
@@ -29,12 +30,9 @@ presentation_html = core.generate_presentation_html(presentation_md_file)
 presentation_html_file = os.path.splitext(presentation_md_file)[0] + '.html'
 open(presentation_html_file, 'w').write(presentation_html)
 
-presentation_file_watcher = monitor.create_filesystem_watcher(presentation_md_file)
-
-app = gui.generate_window(sys.argv,
-                          presentation_html_file,
-                          presentation_md_file,
-                          presentation_file_watcher,
-                          'Slidown: ' + os.path.basename(presentation_md_file))
+gui.generate_window(presentation_html_file,
+                    presentation_md_file,
+                    presentation_html,
+                    'Slidown: ' + os.path.basename(presentation_md_file))
 
 sys.exit(app.exec_())

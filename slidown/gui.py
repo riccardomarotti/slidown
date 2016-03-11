@@ -6,12 +6,14 @@ from PyQt5 import QtWebKitWidgets
 
 import monitor
 
-def generate_window(argv,
-                    presentation_html_file,
+def create_qt_application(argv):
+    return QtWidgets.QApplication(argv)
+
+def generate_window(presentation_html_file,
                     presentation_md_file,
-                    presentation_file_watcher,
+                    presentation_html,
                     window_title):
-    app = QtWidgets.QApplication(argv)
+
     layout = QtWidgets.QVBoxLayout()
     web_view = QtWebKitWidgets.QWebView()
     web_view.load(QtCore.QUrl('file://' + presentation_html_file))
@@ -31,6 +33,11 @@ def generate_window(argv,
     lower_window_layout = QtWidgets.QHBoxLayout()
     lower_window_layout.addWidget(mode_checkbox)
 
+    presentation_file_watcher = monitor.create_presentation_file_watcher(presentation_md_file,
+                                                                         web_view,
+                                                                         presentation_html,
+                                                                         presentation_html_file)
+
     themes_combo =QtWidgets.QComboBox()
     themes_combo.addItems(themes)
     themes_combo.activated.connect(lambda index: monitor.refresh_presentation(
@@ -49,8 +56,6 @@ def generate_window(argv,
 
     main_widget.setWindowTitle(window_title)
     main_widget.show()
-
-    return app
 
 
 def get_presentation_file_name(start_dir):
