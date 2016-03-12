@@ -21,8 +21,6 @@ def generate_presentation_html(presentation_md_file, theme='white'):
     return _generate_presentation_html(md, theme)
 
 def get_changed_slide(old_html, new_html):
-    # soup_old = bs4.BeautifulSoup(bs4.BeautifulSoup(old_html, 'html.parser').prettify(), 'html.parser')
-    # soup_new = bs4.BeautifulSoup(bs4.BeautifulSoup(new_html, 'html.parser').prettify(), 'html.parser')
     soup_old = bs4.BeautifulSoup(old_html, 'html.parser')
     soup_new = bs4.BeautifulSoup(new_html, 'html.parser')
 
