@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 
 import os
+import sys
 import pypandoc
 import bs4
 
 def _generate_presentation_html(presentation_md_text, theme='white'):
     reveal_js_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                               'reveal.js')
+
+    setup_pandoc_for_pyinstaller()
 
     return pypandoc.convert(presentation_md_text,
                             'revealjs',
@@ -68,3 +71,13 @@ def get_changed_with_vertical(soup_old, soup_new):
 def get_vertical_slides(soup):
     return [slide for slide in soup.find_all('section', attrs={'class': None})
                   if slide.parent.name != 'section']
+
+
+def setup_pandoc_for_pyinstaller():
+    try:
+        pypandoc._ensure_pandoc_path()
+    except OSError as error:
+        if hasattr(sys, '_MEIPASS'):
+            pypandoc.__pandoc_path = os.path.join(sys._MEIPASS,  'pandoc/pandoc')
+        else:
+            raise(error)
