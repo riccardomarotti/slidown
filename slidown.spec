@@ -16,7 +16,7 @@ def reveal_js_path():
 
 a = Analysis(['slidown/slidown.py'],
              pathex=['slidown'],
-             binaries=[('/usr/bin/pandoc', 'pandoc')],
+             binaries=[(os.popen('which pandoc').read().strip(), 'pandoc')],
              datas=reveal_js_path(),
              hiddenimports=[],
              hookspath=[],
