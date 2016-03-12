@@ -10,7 +10,7 @@ import config
 
 app = gui.create_qt_application(sys.argv)
 
-configuration = config.get()
+configuration = config.load()
 
 if len(sys.argv) == 2:
     presentation_md_file = os.path.abspath(sys.argv[1])

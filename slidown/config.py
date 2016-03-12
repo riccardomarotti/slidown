@@ -4,7 +4,7 @@ import os
 import appdirs
 import json
 
-def get():
+def load():
     config_file = os.path.join(appdirs.user_config_dir('slidown'),
                                'config.json')
     if os.path.isfile(config_file):
