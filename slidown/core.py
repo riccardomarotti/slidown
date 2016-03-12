@@ -21,6 +21,8 @@ def generate_presentation_html(presentation_md_file, theme='white'):
     return _generate_presentation_html(md, theme)
 
 def get_changed_slide(old_html, new_html):
+    # soup_old = bs4.BeautifulSoup(bs4.BeautifulSoup(old_html, 'html.parser').prettify(), 'html.parser')
+    # soup_new = bs4.BeautifulSoup(bs4.BeautifulSoup(new_html, 'html.parser').prettify(), 'html.parser')
     soup_old = bs4.BeautifulSoup(old_html, 'html.parser')
     soup_new = bs4.BeautifulSoup(new_html, 'html.parser')
 
@@ -60,7 +62,7 @@ def get_changed_with_vertical(soup_old, soup_new):
                for vindex, child_slide in enumerate(list(parent_slide.children))
                if len(slides_old) <= hindex
                or vindex >= len(list(slides_old[hindex].children))
-               or child_slide != list(slides_old[hindex].children or len(parent_slide.children) <= vindex)[vindex]]
+               or child_slide != list(slides_old[hindex].children)[vindex]]
 
     return indexes[0]
 
