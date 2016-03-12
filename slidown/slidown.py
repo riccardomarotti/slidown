@@ -15,10 +15,11 @@ configuration = config.get()
 if len(sys.argv) == 2:
     presentation_md_file = os.path.abspath(sys.argv[1])
 else:
-    if not 'last_presentation' in configuration:
-        presentation_md_file = gui.ask_for_presentation_file_name(os.path.expanduser('~'))
-    else:
+    if 'last_presentation' in configuration and os.path.isfile(configuration['last_presentation']):
         presentation_md_file = configuration['last_presentation']
+    else:
+        presentation_md_file = gui.ask_for_presentation_file_name(os.path.expanduser('~'))
+
 
 if not presentation_md_file:
     sys.exit(0)
