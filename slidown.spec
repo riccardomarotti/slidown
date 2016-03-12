@@ -15,7 +15,7 @@ def reveal_js_path():
     return paths
 
 a = Analysis(['slidown/slidown.py'],
-             pathex=['slidown', '/home/ric/slidown'],
+             pathex=['slidown', 'slidown'],
              binaries=None,
              datas=reveal_js_path(),
              hiddenimports=[],
