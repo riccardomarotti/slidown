@@ -3,7 +3,7 @@
 Sort of a Deckset clone, built upon Reveal.js and Pandoc
 
 Slidown should allow to do everything you can do with
-[Reveal.js](lab.hakim.se/reveal-js), with an interface inspired to
+[Reveal.js](http://lab.hakim.se/reveal-js), with an interface inspired to
 [Deckset](http://www.decksetapp.com/).
 
 Conversions are made with [Pandoc](http://pandoc.org/).
