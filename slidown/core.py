@@ -43,8 +43,6 @@ def get_changed_slide(old_html, new_html):
                               if index >= len(slides_old)
                               or slide.get_text().strip() != slides_old[index].get_text().strip()]
 
-    print(changed_slides_indexes)
-
     return changed_slides_indexes[0], 0
 
 def get_changed_with_vertical(soup_old, soup_new):
