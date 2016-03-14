@@ -9,3 +9,8 @@ integration:
 
 start:
 	python3 slidown/slidown.py
+
+pyinstaller:
+	rm -rf build/ dist/
+	pyinstaller slidown.spec
+	python delete_unused_libraries.py dist/slidown
