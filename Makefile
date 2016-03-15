@@ -1,5 +1,7 @@
 init:
 	pip3 install -r requirements.txt
+	git submodule init
+	git submodule update
 
 test:
 	nosetests -v **/tests
