@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/riccardomarotti/slidown.svg?branch=master)](https://travis-ci.org/riccardomarotti/slidown)
+
 # Slidown
 
 Sort of a Deckset clone, built upon Reveal.js and Pandoc
