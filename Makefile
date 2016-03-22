@@ -1,5 +1,7 @@
 init:
 	pip3 install -r requirements.txt
+
+git-init:
 	git submodule init
 	git submodule update
 
@@ -8,6 +10,8 @@ test:
 
 integration:
 	nosetests -v **/integration_tests
+
+all_tests: test integration
 
 start:
 	python3 slidown/slidown.py
