@@ -2,79 +2,77 @@
 
 import os
 import core
+import rx
+from rx import Observable
+from rx.concurrency import QtScheduler
 from PyQt5 import QtCore
 
-def create_presentation_file_watcher(presentation_md_file,
-                                     web_view,
-                                     presentation_html,
-                                     presentation_html_file):
-    presentation_file_watcher = QtCore.QFileSystemWatcher(
-    [presentation_md_file,
-     os.path.dirname(presentation_md_file)])
+def check_changes(previous, cur):
+    current_modify_date = -1
+    filename = previous['filename']
 
-    presentation_file_watcher.fileChanged.connect(
-        lambda file_name: on_file_changed(file_name,
-                                          web_view,
-                                          presentation_html,
-                                          presentation_file_watcher,
-                                          presentation_html_file))
+    if os.path.isfile(filename):
+        current_modify_date = os.path.getmtime(filename)
 
-    presentation_file_watcher.directoryChanged.connect(
-        lambda directory_name: on_directory_changed(
-            directory_name, presentation_md_file, presentation_file_watcher))
-
-    return presentation_file_watcher
-
-def on_file_changed(file_name,
-                    web_view,
-                    old_html,
-                    watcher,
-                    output_file_name,
-                    theme='white'):
-    if os.path.isfile(file_name):
-        new_presentation_html = core.generate_presentation_html(file_name, theme)
-        if new_presentation_html == old_html:
-            return
-
-        web_view.loadFinished.connect(
-            lambda: on_web_view_load(web_view,
-                                     core.get_changed_slide(
-                                         old_html,
-                                         new_presentation_html)))
-        web_view.load(QtCore.QUrl('file://' + output_file_name))
-
-        watcher.fileChanged.disconnect()
-        watcher.fileChanged.connect(
-            lambda file_name: on_file_changed(file_name,
-                                              web_view,
-                                              new_presentation_html,
-                                              watcher,
-                                              output_file_name,
-                                              theme))
-
-        open(output_file_name, 'w').write(new_presentation_html)
+    return {
+        'previous_modify_date': current_modify_date,
+        'changed': previous['previous_modify_date'] != current_modify_date,
+        'filename': filename
+    }
 
 
+def create_new_html(previous, cur):
+    previous_html = previous['html']
+    new_html = core.generate_presentation_html(previous['file_name'])
 
-def on_directory_changed(directory_name, file_name_to_verify, watcher):
-    if len(watcher.files()) == 0 and os.path.isfile(file_name_to_verify):
-        watcher.addPath(file_name_to_verify)
+    if new_html != previous_html:
+        changed_slide = core.get_changed_slide(previous_html, new_html)
+    else:
+        changed_slide = None
 
-def on_web_view_load(web_view, page_number):
-    web_view.page().mainFrame().evaluateJavaScript(
-        'Reveal.slide' + str(page_number) + ';')
-    web_view.loadFinished.disconnect()
+    return {'file_name': previous['file_name'],
+            'output_file_name': previous['output_file_name'],
+            'html': new_html,
+            'changed_slide': changed_slide,
+            'web_view': previous['web_view']}
 
 
-def refresh_presentation(file_name, web_view, watcher, output_file_name, theme):
+def file_changed_observable(file_name, output_file_name, web_view):
+    return Observable.interval(100, scheduler=QtScheduler(QtCore)).scan(
+        check_changes,
+        seed={'previous_modify_date': -1,
+              'changed': False,
+              'filename': file_name}).filter(
+                  lambda val: val['changed']).scan(
+                      create_new_html,
+                      seed={'file_name': file_name,
+                            'output_file_name': output_file_name,
+                            'html': '',
+                            'changed_slide': (0,0),
+                            'web_view': web_view}).filter(
+                                lambda val: val['changed_slide'] != None)
+
+def load_new_html(values):
+    html = values['html']
+    changed_slide = values['changed_slide']
+    output_file_name = values['output_file_name']
+    web_view = values['web_view']
+    open(output_file_name, 'w').write(html)
+
+    web_view.load(
+        QtCore.QUrl(
+            'file://' + output_file_name + '#/' + "".join(map(str,
+                                                              changed_slide))))
+    web_view.reload()
+
+def manage_md_file_changes(presentation_md_file,
+                           presentation_html_file,
+                           web_view):
+    file_changed_observable(presentation_md_file,
+                            presentation_html_file,
+                            web_view).subscribe(load_new_html)
+
+def refresh_presentation(file_name, web_view, output_file_name, theme):
     html = core.generate_presentation_html(file_name, theme)
     open(output_file_name, 'w').write(html)
     web_view.load(QtCore.QUrl('file://' + output_file_name))
-    watcher.fileChanged.disconnect()
-    watcher.fileChanged.connect(
-            lambda file_name: on_file_changed(file_name,
-                                              web_view,
-                                              html,
-                                              watcher,
-                                              output_file_name,
-                                              theme))

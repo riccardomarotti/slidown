@@ -30,19 +30,18 @@ def generate_window(presentation_html_file,
     lower_window_layout = QtWidgets.QHBoxLayout()
     lower_window_layout.addWidget(mode_checkbox)
 
-    presentation_file_watcher = monitor.create_presentation_file_watcher(presentation_md_file,
-                                                                         web_view,
-                                                                         presentation_html,
-                                                                         presentation_html_file)
+    monitor.manage_md_file_changes(presentation_md_file,
+                                   presentation_html_file,
+                                   web_view)
+
 
     themes = ['White', 'Black', 'League', 'Beige', 'Sky',
               'Night', 'Serif', 'Simple', 'Solarized']
-    themes_combo =QtWidgets.QComboBox()
+    themes_combo = QtWidgets.QComboBox()
     themes_combo.addItems(themes)
     themes_combo.activated.connect(lambda index: monitor.refresh_presentation(
         presentation_md_file,
         web_view,
-        presentation_file_watcher,
         presentation_html_file,
         themes[index].lower()))
     lower_window_layout.addWidget(themes_combo)

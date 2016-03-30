@@ -1,3 +1,4 @@
+rx
 pypandoc
 beautifulsoup4
 appdirs
