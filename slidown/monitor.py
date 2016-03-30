@@ -54,11 +54,7 @@ def file_changed_observable(file_name, output_file_name, web_view):
                             'web_view': web_view}).filter(
                                 lambda val: val['changed_slide'] != None)
 
-def load_new_html(values):
-    html = values['html']
-    changed_slide = values['changed_slide']
-    output_file_name = values['output_file_name']
-    web_view = values['web_view']
+def load_new_html(html, changed_slide, output_file_name, web_view):
     open(output_file_name, 'w').write(html)
 
     web_view.load(
@@ -72,7 +68,11 @@ def manage_md_file_changes(presentation_md_file,
                            web_view):
     file_changed_observable(presentation_md_file,
                             presentation_html_file,
-                            web_view).subscribe(load_new_html)
+                            web_view).subscribe(lambda values: load_new_html(
+                                values['html'],
+                                values['changed_slide'],
+                                values['output_file_name'],
+                                values['web_view']))
 
 def refresh_presentation_theme(file_name, web_view, output_file_name, theme):
     html = core.generate_presentation_html(file_name, theme)
