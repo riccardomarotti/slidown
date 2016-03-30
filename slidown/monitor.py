@@ -7,6 +7,8 @@ from rx import Observable
 from rx.concurrency import QtScheduler
 from PyQt5 import QtCore
 
+current_theme = 'white'
+
 def check_changes(previous, cur):
     current_modify_date = -1
     filename = previous['filename']
@@ -23,7 +25,7 @@ def check_changes(previous, cur):
 
 def create_new_html(previous, cur):
     previous_html = previous['html']
-    new_html = core.generate_presentation_html(previous['file_name'])
+    new_html = core.generate_presentation_html(previous['file_name'], theme=current_theme)
 
     if new_html != previous_html:
         changed_slide = core.get_changed_slide(previous_html, new_html)
@@ -72,7 +74,9 @@ def manage_md_file_changes(presentation_md_file,
                             presentation_html_file,
                             web_view).subscribe(load_new_html)
 
-def refresh_presentation(file_name, web_view, output_file_name, theme):
+def refresh_presentation_theme(file_name, web_view, output_file_name, theme):
     html = core.generate_presentation_html(file_name, theme)
     open(output_file_name, 'w').write(html)
     web_view.load(QtCore.QUrl('file://' + output_file_name))
+    global current_theme
+    current_theme = theme

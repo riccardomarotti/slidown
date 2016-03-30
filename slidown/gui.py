@@ -39,7 +39,7 @@ def generate_window(presentation_html_file,
               'Night', 'Serif', 'Simple', 'Solarized']
     themes_combo = QtWidgets.QComboBox()
     themes_combo.addItems(themes)
-    themes_combo.activated.connect(lambda index: monitor.refresh_presentation(
+    themes_combo.activated.connect(lambda index: monitor.refresh_presentation_theme(
         presentation_md_file,
         web_view,
         presentation_html_file,
