@@ -6,10 +6,10 @@ git-init:
 	git submodule update
 
 test:
-	nosetests -v **/tests
+	nosetests -v --with-coverage **/tests
 
 integration:
-	nosetests -v **/integration_tests
+	nosetests -v --with-coverage **/integration_tests
 
 all_tests: test integration
 
