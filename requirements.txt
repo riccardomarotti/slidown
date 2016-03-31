@@ -3,3 +3,4 @@ pypandoc
 beautifulsoup4
 appdirs
 nose
+python-coveralls
