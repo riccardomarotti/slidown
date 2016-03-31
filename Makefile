@@ -1,3 +1,4 @@
+tests_command = nosetests -v --with-coverage  --cover-package=slidown
 init:
 	pip3 install -r requirements.txt
 
@@ -6,10 +7,10 @@ git-init:
 	git submodule update
 
 test:
-	nosetests -v --with-coverage **/tests
+	$(tests_command) **/tests
 
 integration:
-	nosetests -v --with-coverage **/integration_tests
+	$(tests_command) **/integration_tests
 
 all_tests: test integration
 
