@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
+import core
+
 import os
-from slidown import core
+
 import rx
 from rx import Observable
 from rx.concurrency import QtScheduler

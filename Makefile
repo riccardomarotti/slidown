@@ -1,3 +1,5 @@
+export PYTHONPATH=./slidown:$PYTHONPATH
+
 tests_command = nosetests -v --with-coverage  --cover-package=slidown
 init:
 	pip3 install -r requirements.txt
@@ -15,7 +17,7 @@ integration:
 all_tests: test integration
 
 start:
-	python3 slidown/slidown.py
+	python3 slidown/main.py
 
 pyinstaller:
 	rm -rf build/ dist/
