@@ -54,7 +54,7 @@ def test_check_changes_with_existing_modified_path():
         'changed': False
     }
 
-    time.sleep(0.001) #allows to modified date to change
+    time.sleep(0.01) #allows to modified date to change
     os.utime(a_file.name, None)
 
     expected_output = {
