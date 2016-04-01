@@ -7,7 +7,6 @@ from nose.tools import assert_equals
 
 from .. import monitor
 
-
 def test_check_changes_with_not_existing_path():
     previous = {
         'filename': 'not_existing_file',
@@ -64,3 +63,55 @@ def test_check_changes_with_existing_modified_path():
     }
 
     assert_equals(expected_output, monitor.check_changes(previous, current))
+
+def test_create_new_html_with_changed_slide():
+    import core
+    core.generate_presentation_html = lambda file_name, theme: 'a new html text'
+    core.get_changed_slide = lambda previous_html, new_html: 'the changed slide'
+
+    an_input_file_name = tempfile.NamedTemporaryFile().name
+    an_output_file_name = tempfile.NamedTemporaryFile().name
+
+    expected_output = {
+        'html': 'a new html text',
+        'file_name': an_input_file_name,
+        'output_file_name': an_output_file_name,
+        'web_view': 'a web view',
+        'changed_slide': 'the changed slide'
+    }
+
+    actual_output = monitor.create_new_html({
+        'html': 'an old html text',
+        'file_name': an_input_file_name,
+        'output_file_name': an_output_file_name,
+        'web_view': 'a web view',
+        'changed_slide': 'an old changed slide'
+    }, {})
+
+    assert_equals(expected_output, actual_output)
+
+def test_create_new_html_with_no_changes():
+    import core
+    core.generate_presentation_html = lambda file_name, theme: 'generated html text'
+    core.get_changed_slide = lambda previous_html, new_html: None
+
+    an_input_file_name = tempfile.NamedTemporaryFile().name
+    an_output_file_name = tempfile.NamedTemporaryFile().name
+
+    expected_output = {
+        'html': 'generated html text',
+        'file_name': an_input_file_name,
+        'output_file_name': an_output_file_name,
+        'web_view': 'a web view',
+        'changed_slide': None
+    }
+
+    actual_output = monitor.create_new_html({
+        'html': 'any html text',
+        'file_name': an_input_file_name,
+        'output_file_name': an_output_file_name,
+        'web_view': 'a web view',
+        'changed_slide': 'an old changed slide'
+    }, {})
+
+    assert_equals(expected_output, actual_output)
