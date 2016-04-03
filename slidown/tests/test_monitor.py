@@ -70,21 +70,16 @@ def test_create_new_html_with_changed_slide():
     core.get_changed_slide = lambda previous_html, new_html: 'the changed slide'
 
     an_input_file_name = tempfile.NamedTemporaryFile().name
-    an_output_file_name = tempfile.NamedTemporaryFile().name
 
     expected_output = {
         'html': 'a new html text',
         'file_name': an_input_file_name,
-        'output_file_name': an_output_file_name,
-        'web_view': 'a web view',
         'changed_slide': 'the changed slide'
     }
 
     actual_output = monitor.create_new_html({
         'html': 'an old html text',
         'file_name': an_input_file_name,
-        'output_file_name': an_output_file_name,
-        'web_view': 'a web view',
         'changed_slide': 'an old changed slide'
     }, {})
 
@@ -96,21 +91,16 @@ def test_create_new_html_with_no_changes():
     core.get_changed_slide = lambda previous_html, new_html: None
 
     an_input_file_name = tempfile.NamedTemporaryFile().name
-    an_output_file_name = tempfile.NamedTemporaryFile().name
 
     expected_output = {
         'html': 'generated html text',
         'file_name': an_input_file_name,
-        'output_file_name': an_output_file_name,
-        'web_view': 'a web view',
         'changed_slide': None
     }
 
     actual_output = monitor.create_new_html({
         'html': 'any html text',
         'file_name': an_input_file_name,
-        'output_file_name': an_output_file_name,
-        'web_view': 'a web view',
         'changed_slide': 'an old changed slide'
     }, {})
 

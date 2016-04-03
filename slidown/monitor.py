@@ -36,15 +36,10 @@ def create_new_html(previous, cur):
         changed_slide = None
 
     return {'file_name': file_name,
-            'output_file_name': previous['output_file_name'],
             'html': new_html,
-            'changed_slide': changed_slide,
-            'web_view': previous['web_view']}
+            'changed_slide': changed_slide}
 
-
-def create_new_html_on_md_file_changes_observable(file_name,
-                                                           output_file_name,
-                                                           web_view):
+def create_new_html_on_md_file_changes_observable(file_name):
     from PyQt5 import QtCore
     return Observable.interval(100, scheduler=QtScheduler(QtCore)).scan(
         check_changes,
@@ -54,10 +49,8 @@ def create_new_html_on_md_file_changes_observable(file_name,
                   lambda val: val['changed']).scan(
                       create_new_html,
                       seed={'file_name': file_name,
-                            'output_file_name': output_file_name,
                             'html': '',
-                            'changed_slide': (0,0),
-                            'web_view': web_view}).filter(
+                            'changed_slide': (0,0)}).filter(
                                 lambda val: val['changed_slide'] != None)
 
 def load_new_html(html, changed_slide, output_file_name, web_view):
@@ -74,12 +67,12 @@ def manage_md_file_changes(presentation_md_file,
                            presentation_html_file,
                            web_view):
     create_new_html_on_md_file_changes_observable(
-        presentation_md_file, presentation_html_file, web_view).subscribe(
+        presentation_md_file).subscribe(
             lambda values: load_new_html(
                 values['html'],
                 values['changed_slide'],
-                values['output_file_name'],
-                values['web_view']
+                presentation_html_file,
+                web_view
             )
         )
 
