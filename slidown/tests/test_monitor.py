@@ -24,84 +24,86 @@ def test_check_changes_with_not_existing_path():
     assert_equals(expected_output, monitor.check_changes(previous, current))
 
 def test_check_changes_with_existing_not_modified_path():
-    a_file = tempfile.NamedTemporaryFile()
-    modified_date = os.path.getmtime(a_file.name)
+    with tempfile.TemporaryFile() as a_file:
+        modified_date = os.path.getmtime(a_file.name)
 
-    previous = {
-        'filename': a_file.name,
-        'previous_modify_date': modified_date,
-        'changed': False
-    }
+        previous = {
+            'filename': a_file.name,
+            'previous_modify_date': modified_date,
+            'changed': False
+        }
 
-    current = 'anything'
+        current = 'anything'
 
-    expected_output = {
-        'filename': a_file.name,
-        'previous_modify_date': modified_date,
-        'changed': False
-    }
+        expected_output = {
+            'filename': a_file.name,
+            'previous_modify_date': modified_date,
+            'changed': False
+        }
 
-    assert_equals(expected_output, monitor.check_changes(previous, current))
+        assert_equals(expected_output, monitor.check_changes(previous, current))
 
 def test_check_changes_with_existing_modified_path():
-    a_file = tempfile.NamedTemporaryFile()
-    current = 'anything'
+    with tempfile.NamedTemporaryFile() as a_file:
+        current = 'anything'
 
-    previous = {
-        'filename': a_file.name,
-        'previous_modify_date': os.path.getmtime(a_file.name),
-        'changed': False
-    }
+        previous = {
+            'filename': a_file.name,
+            'previous_modify_date': os.path.getmtime(a_file.name),
+            'changed': False
+        }
 
-    time.sleep(0.01) #allows to modified date to change
-    os.utime(a_file.name, None)
+        time.sleep(0.01) #allows to modified date to change
+        os.utime(a_file.name, None)
 
-    expected_output = {
-        'filename': a_file.name,
-        'previous_modify_date': os.path.getmtime(a_file.name),
-        'changed': True
-    }
+        expected_output = {
+            'filename': a_file.name,
+            'previous_modify_date': os.path.getmtime(a_file.name),
+            'changed': True
+        }
 
-    assert_equals(expected_output, monitor.check_changes(previous, current))
+        assert_equals(expected_output, monitor.check_changes(previous, current))
 
 def test_create_new_html_with_changed_slide():
     import core
     core.generate_presentation_html = lambda file_name, theme: 'a new html text'
     core.get_changed_slide = lambda previous_html, new_html: 'the changed slide'
 
-    an_input_file_name = tempfile.NamedTemporaryFile().name
+    with tempfile.NamedTemporaryFile() as an_input_file:
+        an_input_file_name = an_input_file.name
 
-    expected_output = {
-        'html': 'a new html text',
-        'file_name': an_input_file_name,
-        'changed_slide': 'the changed slide'
-    }
+        expected_output = {
+            'html': 'a new html text',
+            'file_name': an_input_file_name,
+            'changed_slide': 'the changed slide'
+        }
 
-    actual_output = monitor.create_new_html({
-        'html': 'an old html text',
-        'file_name': an_input_file_name,
-        'changed_slide': 'an old changed slide'
-    }, {})
+        actual_output = monitor.create_new_html({
+            'html': 'an old html text',
+            'file_name': an_input_file_name,
+            'changed_slide': 'an old changed slide'
+        }, {})
 
-    assert_equals(expected_output, actual_output)
+        assert_equals(expected_output, actual_output)
 
 def test_create_new_html_with_no_changes():
     import core
     core.generate_presentation_html = lambda file_name, theme: 'generated html text'
     core.get_changed_slide = lambda previous_html, new_html: None
 
-    an_input_file_name = tempfile.NamedTemporaryFile().name
+    with tempfile.NamedTemporaryFile() as an_input_file:
+        an_input_file_name = an_input_file.name
 
-    expected_output = {
-        'html': 'generated html text',
-        'file_name': an_input_file_name,
-        'changed_slide': None
-    }
+        expected_output = {
+            'html': 'generated html text',
+            'file_name': an_input_file_name,
+            'changed_slide': None
+        }
 
-    actual_output = monitor.create_new_html({
-        'html': 'any html text',
-        'file_name': an_input_file_name,
-        'changed_slide': 'an old changed slide'
-    }, {})
+        actual_output = monitor.create_new_html({
+            'html': 'any html text',
+            'file_name': an_input_file_name,
+            'changed_slide': 'an old changed slide'
+        }, {})
 
-    assert_equals(expected_output, actual_output)
+        assert_equals(expected_output, actual_output)
