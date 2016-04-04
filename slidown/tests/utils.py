@@ -2,17 +2,12 @@
 
 def with_setup(setup_function):
     def decorator(testcase):
-        kwargs = {}
+        keyword_arguments_from_setup = {}
 
-        test_wrapper = lambda: testcase(**kwargs)
-        test_wrapper.__name__ = testcase.__name__
+        testcase_with_arguments = lambda: testcase(**keyword_arguments_from_setup)
+        testcase_with_arguments.__name__ = testcase.__name__
+        testcase_with_arguments.setup = lambda: keyword_arguments_from_setup.update(setup_function())
 
-        def setup_wrapper():
-            setup_kwargs = setup_function()
-            kwargs.update(setup_kwargs)
-
-        test_wrapper.setup = setup_wrapper
-
-        return test_wrapper
+        return testcase_with_arguments
 
     return decorator
