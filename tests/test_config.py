@@ -4,7 +4,7 @@ import os
 import tempfile
 from nose.tools import assert_equals
 
-from .. import config
+from slidown import config
 
 
 def test_load_not_existing_config():

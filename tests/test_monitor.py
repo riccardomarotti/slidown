@@ -5,7 +5,7 @@ import time
 import tempfile
 from nose.tools import assert_equals
 
-from .. import monitor
+from slidown import monitor
 
 def test_check_changes_with_not_existing_path():
     previous = {

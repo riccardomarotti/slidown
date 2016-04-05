@@ -3,7 +3,7 @@
 import os
 from nose.tools import assert_equals, raises
 
-from .. import core
+from slidown import core
 
 @raises(RuntimeError)
 def test_get_changed_slide_with_same_html():
