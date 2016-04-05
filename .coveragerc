@@ -1,2 +1,2 @@
 [report]
-omit = slidown/gui.py
+omit = slidown/gui.py,slidown/main.py
