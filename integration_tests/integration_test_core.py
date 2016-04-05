@@ -3,7 +3,7 @@
 import os
 from nose.tools import assert_equals
 
-from .. import core
+from slidown import core
 
 
 def test_second_vertical_slide_different():

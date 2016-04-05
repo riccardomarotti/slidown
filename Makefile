@@ -9,10 +9,10 @@ git-init:
 	git submodule update
 
 test:
-	$(tests_command) tests
+	$(tests_command) tests/**
 
 integration:
-	$(tests_command) **/integration_tests
+	$(tests_command) integration_tests/**
 
 all_tests: test integration
 
