@@ -11,7 +11,6 @@ def create_qt_application(argv):
 
 def generate_window(presentation_html_file,
                     presentation_md_file,
-                    presentation_html,
                     window_title):
 
     layout = QtWidgets.QVBoxLayout()
