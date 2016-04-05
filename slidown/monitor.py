@@ -59,8 +59,8 @@ def load_new_html(html, changed_slide, output_file_name, web_view):
 
     web_view.load(
         QtCore.QUrl(
-            'file://' + output_file_name + '#/' + "".join(map(str,
-                                                              changed_slide))))
+            'file://' + output_file_name + '#/' + ",".join(map(str,
+                                                               changed_slide))))
     web_view.reload()
 
 def manage_md_file_changes(presentation_md_file,
