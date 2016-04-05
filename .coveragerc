@@ -1,0 +1,2 @@
+[report]
+omit = slidown/gui.py
