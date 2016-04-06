@@ -310,3 +310,27 @@ def test_second_vertical_slide_different():
 </section></section></section>"""
 
     assert_equals((0,2), core.get_changed_slide(html1, html2))
+
+
+@raises(OSError)
+def test_setup_pandoc_not_found_and_not_pyinstaller():
+    def os_error():
+        raise OSError
+
+    import pypandoc
+    pypandoc._ensure_pandoc_path = os_error
+
+    core.setup_pandoc_for_pyinstaller()
+
+def test_setup_pandoc_not_found_and_pyinstaller_present():
+    def os_error():
+        raise OSError
+
+    import pypandoc
+    pypandoc._ensure_pandoc_path = os_error
+    import sys
+    sys._MEIPASS = '/a/path/'
+
+    core.setup_pandoc_for_pyinstaller()
+
+    assert_equals('/a/path/pandoc/pandoc', pypandoc.__pandoc_path)
