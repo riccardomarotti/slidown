@@ -89,7 +89,6 @@ def test_create_new_html_with_changed_slide():
 def test_create_new_html_with_no_changes():
     import core
     core.generate_presentation_html = lambda file_name, theme: 'generated html text'
-    core.get_changed_slide = lambda previous_html, new_html: None
 
     with tempfile.NamedTemporaryFile() as an_input_file:
         an_input_file_name = an_input_file.name
@@ -101,7 +100,7 @@ def test_create_new_html_with_no_changes():
         }
 
         actual_output = monitor.create_new_html({
-            'html': 'any html text',
+            'html': 'generated html text',
             'file_name': an_input_file_name,
             'changed_slide': 'an old changed slide'
         }, {})
