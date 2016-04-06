@@ -3,7 +3,6 @@
 import os
 import time
 import tempfile
-from nose.tools import assert_equals
 
 from slidown import monitor
 
@@ -21,7 +20,7 @@ def test_check_changes_with_not_existing_path():
         'changed': True
     }
 
-    assert_equals(expected_output, monitor.check_changes(previous, current))
+    assert monitor.check_changes(previous, current) == expected_output
 
 def test_check_changes_with_existing_not_modified_path():
     with tempfile.TemporaryFile() as a_file:
@@ -41,7 +40,7 @@ def test_check_changes_with_existing_not_modified_path():
             'changed': False
         }
 
-        assert_equals(expected_output, monitor.check_changes(previous, current))
+        assert monitor.check_changes(previous, current) == expected_output
 
 def test_check_changes_with_existing_modified_path():
     with tempfile.NamedTemporaryFile() as a_file:
@@ -62,10 +61,10 @@ def test_check_changes_with_existing_modified_path():
             'changed': True
         }
 
-        assert_equals(expected_output, monitor.check_changes(previous, current))
+        assert monitor.check_changes(previous, current) == expected_output
 
 def test_create_new_html_with_changed_slide():
-    import core
+    from slidown import core
     core.generate_presentation_html = lambda file_name, theme: 'a new html text'
     core.get_changed_slide = lambda previous_html, new_html: 'the changed slide'
 
@@ -84,10 +83,10 @@ def test_create_new_html_with_changed_slide():
             'changed_slide': 'an old changed slide'
         }, {})
 
-        assert_equals(expected_output, actual_output)
+        assert expected_output, actual_output == expected_output
 
 def test_create_new_html_with_no_changes():
-    import core
+    from slidown import core
     core.generate_presentation_html = lambda file_name, theme: 'generated html text'
 
     with tempfile.NamedTemporaryFile() as an_input_file:
@@ -105,4 +104,4 @@ def test_create_new_html_with_no_changes():
             'changed_slide': 'an old changed slide'
         }, {})
 
-        assert_equals(expected_output, actual_output)
+        assert actual_output == expected_output

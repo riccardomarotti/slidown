@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import os, tempfile
-from nose.tools import assert_equals
 
 from slidown import core
 
@@ -32,13 +31,13 @@ def test_second_vertical_slide_different():
 
     html2 = generate_html(md2)
 
-    assert_equals((0,2), core.get_changed_slide(html1, html2))
+    assert core.get_changed_slide(html1, html2) == (0,2)
 
 def test_added_new_slide():
     html1 = generate_html('')
     html2 = generate_html('## A title')
 
-    assert_equals((0,0), core.get_changed_slide(html1, html2))
+    assert core.get_changed_slide(html1, html2) == (0,0)
 
 def test_double_vertical():
     md1 = '\
@@ -79,7 +78,7 @@ def test_double_vertical():
 '
     html2 = generate_html(md2)
 
-    assert_equals((1, 2), core.get_changed_slide(html1, html2))
+    assert core.get_changed_slide(html1, html2) == (1, 2)
 
 
 
@@ -114,7 +113,7 @@ def test_more_complex():
 '
     html2 = generate_html(md2)
 
-    assert_equals((2,0), core.get_changed_slide(html1, html2))
+    assert core.get_changed_slide(html1, html2) == (2,0)
 
 def test_add_new_horizontal():
     md1 = '\
@@ -139,7 +138,7 @@ def test_add_new_horizontal():
 '
     html2 = generate_html(md2)
 
-    assert_equals((1, 0), core.get_changed_slide(html1, html2))
+    assert core.get_changed_slide(html1, html2) == (1, 0)
 
 def test_delete_last_horizontal():
     md1 = '\
@@ -164,7 +163,7 @@ def test_delete_last_horizontal():
 '
     html2 = generate_html(md2)
 
-    assert_equals((1, 0), core.get_changed_slide(html1, html2))
+    assert core.get_changed_slide(html1, html2) == (1, 0)
 
 
 def test_bug():
@@ -191,4 +190,4 @@ different text
 """
     html2 = generate_html(md2)
 
-    assert_equals((1,0), core.get_changed_slide(html1, html2))
+    assert core.get_changed_slide(html1, html2) == (1,0)

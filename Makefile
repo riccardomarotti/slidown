@@ -1,6 +1,6 @@
 export PYTHONPATH=./slidown:$PYTHONPATH
 
-tests_command = nosetests -v --with-coverage --cover-package=slidown
+tests_command = py.test --cov=slidown
 init:
 	pip3 install -r requirements.txt
 

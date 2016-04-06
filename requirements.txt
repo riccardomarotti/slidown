@@ -2,5 +2,6 @@ rx
 pypandoc
 beautifulsoup4
 appdirs
-nose
+pytest
+pytest-cov
 python-coveralls

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import core
+from slidown import core
 
 import os
 

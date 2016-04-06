@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import os
-from nose.tools import assert_equals, raises
+import pytest
 
 from slidown import core
 
-@raises(RuntimeError)
 def test_get_changed_slide_with_same_html():
     html1 = '\
 <section class="slide">\
@@ -17,14 +16,16 @@ def test_get_changed_slide_with_same_html():
 <h1> A title </h1>\
 </section>\
 '
-    core.get_changed_slide(html1, html2)
+
+    with pytest.raises(RuntimeError):
+        core.get_changed_slide(html1, html2)
 
 
 def test_first_slide_different():
     html1 = '<section class="slide">Single Horizontal Slide</section>'
     html2 = '<section class="slide">Single Horizontal Slide Different</section>'
 
-    assert_equals((0,0), core.get_changed_slide(html1, html2))
+    assert core.get_changed_slide(html1, html2) == (0,0)
 
 def test_second_slide_different():
     html1 = '\
@@ -35,7 +36,7 @@ def test_second_slide_different():
 <section class="slide">First Horizontal Slide</section>\
 <section class="slide">Second  different Horizontal Slide</section>\
 '
-    assert_equals((1,0), core.get_changed_slide(html1, html2))
+    assert core.get_changed_slide(html1, html2) == (1,0)
 
 
 def test_add_new_horizontal():
@@ -78,7 +79,7 @@ def test_add_new_horizontal():
   </section>
 </section>"""
 
-    assert_equals((1, 0), core.get_changed_slide(html1, html2))
+    assert core.get_changed_slide(html1, html2) == (1, 0)
 
 
 def test_bug():
@@ -111,7 +112,7 @@ def test_bug():
   <h1>Title 3</h1>
 </section>"""
 
-    assert_equals((1,0), core.get_changed_slide(html1, html2))
+    assert core.get_changed_slide(html1, html2) == (1,0)
 
 
 def test_delete_last_horizontal():
@@ -155,7 +156,7 @@ def test_delete_last_horizontal():
 </section>
 </section>"""
 
-    assert_equals((1, 0), core.get_changed_slide(html1, html2))
+    assert core.get_changed_slide(html1, html2) == (1, 0)
 
 
 def test_more_complex():
@@ -219,7 +220,7 @@ def test_more_complex():
   <h1>Horizontal different slide 3</h1>
 </section></section>"""
 
-    assert_equals((2,0), core.get_changed_slide(html1, html2))
+    assert core.get_changed_slide(html1, html2) == (2,0)
 
 def test_double_vertical():
     html1 = """
@@ -287,7 +288,7 @@ def test_double_vertical():
 </section></section></section>
 """
 
-    assert_equals((1, 2), core.get_changed_slide(html1, html2))
+    assert core.get_changed_slide(html1, html2) == (1, 2)
 
 
 def test_second_vertical_slide_different():
@@ -309,28 +310,25 @@ def test_second_vertical_slide_different():
 <h1>Vertical different Slide 2</h1>
 </section></section></section>"""
 
-    assert_equals((0,2), core.get_changed_slide(html1, html2))
+    assert core.get_changed_slide(html1, html2) == (0,2)
 
-
-@raises(OSError)
-def test_setup_pandoc_not_found_and_not_pyinstaller():
+@pytest.fixture()
+def pypandoc():
     def os_error():
         raise OSError
 
     import pypandoc
     pypandoc._ensure_pandoc_path = os_error
+    return pypandoc
 
-    core.setup_pandoc_for_pyinstaller()
+def test_setup_pandoc_not_found_and_not_pyinstaller(pypandoc):
+    with pytest.raises(OSError):
+        core.setup_pandoc_for_pyinstaller()
 
-def test_setup_pandoc_not_found_and_pyinstaller_present():
-    def os_error():
-        raise OSError
-
-    import pypandoc
-    pypandoc._ensure_pandoc_path = os_error
+def test_setup_pandoc_not_found_and_pyinstaller_present(pypandoc):
     import sys
     sys._MEIPASS = '/a/path/'
 
     core.setup_pandoc_for_pyinstaller()
 
-    assert_equals('/a/path/pandoc/pandoc', pypandoc.__pandoc_path)
+    assert pypandoc.__pandoc_path == '/a/path/pandoc/pandoc'

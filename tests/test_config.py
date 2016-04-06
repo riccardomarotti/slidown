@@ -2,7 +2,6 @@
 
 import os
 import tempfile
-from nose.tools import assert_equals
 
 from slidown import config
 
@@ -15,8 +14,8 @@ def test_load_not_existing_config():
 
         config_hash = config.load()
 
-        assert_equals("{}", open(configuration_file).read())
-        assert_equals({}, config_hash)
+        assert open(configuration_file).read() == "{}"
+        assert config_hash == {}
 
 def test_load_existing_config():
     with tempfile.TemporaryDirectory() as temp_dir:
@@ -29,8 +28,8 @@ def test_load_existing_config():
 
         config_hash = config.load()
 
-        assert_equals('{"a json": "config"}', open(configuration_file).read())
-        assert_equals({'a json': 'config'}, config_hash)
+        assert open(configuration_file).read() == '{"a json": "config"}'
+        assert config_hash == {'a json': 'config'}
 
 def test_save():
     config_hash = {
@@ -46,4 +45,16 @@ def test_save():
 
         config.save(config_hash)
 
-        assert_equals(config_hash, config.load())
+        assert config.load() == config_hash
+
+def test_not_existing_config_directory():
+    temp_dir_name = tempfile.TemporaryDirectory().name
+
+    configuration_file = os.path.join(temp_dir_name, 'config.json')
+    import appdirs
+    appdirs.user_config_dir = lambda any_appname: temp_dir_name
+
+    config_hash = config.load()
+
+    assert open(configuration_file).read() == "{}"
+    assert config_hash == {}
