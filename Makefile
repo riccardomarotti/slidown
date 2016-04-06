@@ -1,6 +1,6 @@
 export PYTHONPATH=./slidown:$PYTHONPATH
 
-tests_command = py.test --cov=slidown
+tests_command = py.test --cov=slidown --cov-append
 init:
 	pip3 install -r requirements.txt
 
