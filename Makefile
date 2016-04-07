@@ -14,6 +14,9 @@ test:
 integration:
 	$(tests_command) integration_tests/**
 
+atest:
+	$(tests_command) $(filter-out $@,$(MAKECMDGOALS))
+
 all_tests: test integration
 
 start:
