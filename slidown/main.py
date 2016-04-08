@@ -28,9 +28,6 @@ presentation_html_file = os.path.splitext(presentation_md_file)[0] + '.html'
 if os.path.isfile(presentation_html_file):
     os.remove(presentation_html_file)
 
-print(presentation_md_file)
-print(presentation_html_file)
-
 gui.generate_window(presentation_html_file,
                     presentation_md_file,
                     'Slidown: ' + os.path.basename(presentation_md_file))
