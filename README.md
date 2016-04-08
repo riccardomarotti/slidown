@@ -20,6 +20,7 @@ First of all, ensure to have [Python 3](https://www.python.org/),
 
     git clone https://github.com/riccardomarotti/slidown.git
     cd slidown
+    make git-init
     make init
     make start
 
