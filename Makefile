@@ -1,4 +1,4 @@
-export PYTHONPATH=./slidown:$PYTHONPATH
+export PYTHONPATH=$(CURDIR)
 
 tests_command = py.test --cov=slidown --cov-append
 init:

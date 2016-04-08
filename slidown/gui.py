@@ -4,7 +4,7 @@ from PyQt5 import QtCore
 from PyQt5 import QtWidgets
 from PyQt5 import QtWebKitWidgets
 
-import monitor
+from slidown import monitor
 
 def create_qt_application(argv):
     return QtWidgets.QApplication(argv)

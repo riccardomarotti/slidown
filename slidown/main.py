@@ -3,8 +3,8 @@
 import sys
 import os
 
-import gui
-import config
+from slidown import gui, config
+
 
 app = gui.create_qt_application(sys.argv)
 
