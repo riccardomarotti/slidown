@@ -9,15 +9,15 @@ from slidown import monitor
 def test_check_changes_with_not_existing_path():
     previous = {
         'filename': 'not_existing_file',
-        'previous_modify_date': 'anything'
+        'previous_modify_date': 'a modified date'
     }
 
     current = 'anything'
 
     expected_output = {
         'filename': 'not_existing_file',
-        'previous_modify_date': -1,
-        'changed': True
+        'previous_modify_date': 'a modified date',
+        'changed': False
     }
 
     assert monitor.check_changes(previous, current) == expected_output

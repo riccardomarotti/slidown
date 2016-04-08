@@ -11,7 +11,7 @@ from rx.concurrency import QtScheduler
 current_theme = 'white'
 
 def check_changes(previous, cur):
-    current_modify_date = -1
+    current_modify_date = previous['previous_modify_date']
     filename = previous['filename']
 
     if os.path.isfile(filename):
