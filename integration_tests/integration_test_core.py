@@ -166,26 +166,25 @@ def test_delete_last_horizontal():
     assert core.get_changed_slide(html1, html2) == (1, 0)
 
 
-def test_bug():
-
+def test_bug_when_adding_background_images():
     md1 = """
-## Title 1
+# Big Title
 
-## Title 2
+# Title 1{data-background=image_url}
 
-## Title 3
+- Item 1
+- Item 2
 
 """
     html1 = generate_html(md1)
 
     md2 = """
-## Title 1
+# Big Title
 
-## Title 2
+# Title 1
 
-different text
-
-## Title 3
+- Item 1
+- Item 2
 
 """
     html2 = generate_html(md2)

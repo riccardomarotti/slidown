@@ -57,10 +57,11 @@ def load_new_html(html, changed_slide, output_file_name, web_view):
     from PyQt5 import QtCore
     open(output_file_name, 'w').write(html)
 
+    slide_url = 'file://' + output_file_name + '#/' + "/".join(map(str,
+                                                                   changed_slide))
+
     web_view.load(
-        QtCore.QUrl(
-            'file://' + output_file_name + '#/' + ",".join(map(str,
-                                                               changed_slide))))
+        QtCore.QUrl(slide_url))
     web_view.reload()
 
 def manage_md_file_changes(presentation_md_file,

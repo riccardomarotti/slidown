@@ -82,39 +82,6 @@ def test_add_new_horizontal():
     assert core.get_changed_slide(html1, html2) == (1, 0)
 
 
-def test_bug():
-    html1 = """
-<section>
-  <section id="title-1" class="titleslide slide level2">
-    <h1>Title 1</h1>
-  </section>
-</section>
-<section>
-  <section id="title-2" class="titleslide slide level2">
-    <h1>Title 2</h1>
-  </section>
-</section>
-<section>
-  <section id="title-3" class="titleslide slide level2">
-    <h1>Title 3</h1>
-  </section>
-</section>
-"""
-    html2 ="""
-<section id="title-1" class="slide level2">
-  <h1>Title 1</h1>
-</section>
-<section id="title-2" class="slide level2">
-  <h1>Title 2</h1>
-<p>different text</p>
-</section>
-<section id="title-3" class="slide level2">
-  <h1>Title 3</h1>
-</section>"""
-
-    assert core.get_changed_slide(html1, html2) == (1,0)
-
-
 def test_delete_last_horizontal():
     html1 = """
 <section>
@@ -311,6 +278,31 @@ def test_second_vertical_slide_different():
 </section></section></section>"""
 
     assert core.get_changed_slide(html1, html2) == (0,2)
+
+def test_bug_when_adding_background_images():
+    html1 = """
+<section id="big-title" class="slide level2" data-background="image url">
+<h1>Big Title</h1>
+</section><section id="title-1" class="slide level2" data-background="image url">
+<h1>Title 1</h1>
+<ul>
+<li>Item 1</li>
+<li>Item 2</li>
+</ul>
+</section>"""
+
+    html2 = """
+<section id="big-title" class="slide level2" data-background="image url">
+<h1>Big Title</h1>
+</section><section id="title-1" class="slide level2">
+<h1>Title 1</h1>
+<ul>
+<li>Item 1</li>
+<li>Item 2</li>
+</ul>
+</section>"""
+
+    assert core.get_changed_slide(html1, html2) == (1,0)
 
 @pytest.fixture()
 def pypandoc():
