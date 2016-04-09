@@ -9,7 +9,7 @@ Slidown should allow to do everything you can do with
 [Reveal.js](http://lab.hakim.se/reveal-js), with an interface inspired to
 [Deckset](http://www.decksetapp.com/).
 
-Conversions from Markdown to Reveal.js are made with [Pandoc](http://pandoc.org/).
+Conversions from Markdown to Reveal.js are made with [Pandoc](http://pandoc.org/) (version 1.17.0.3+).
 
 Still not released, but you can start it from source.
 
