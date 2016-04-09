@@ -9,14 +9,14 @@ Slidown should allow to do everything you can do with
 [Reveal.js](http://lab.hakim.se/reveal-js), with an interface inspired to
 [Deckset](http://www.decksetapp.com/).
 
-Conversions from Markdown to Reveal.js are made with [Pandoc](http://pandoc.org/) (version 1.17.0.3+).
+Conversions from Markdown to Reveal.js are made with [Pandoc](http://pandoc.org/).
 
 Still not released, but you can start it from source.
 
 First of all, ensure to have [Python 3](https://www.python.org/),
 [Qt5](http://www.qt.io/),
 [PyQt5](https://riverbankcomputing.com/software/pyqt/intro) and
-[Pandoc](http://pandoc.org/) installed. Then:
+[Pandoc](http://pandoc.org/) (version 1.17.0.3+) installed. Then:
 
     git clone https://github.com/riccardomarotti/slidown.git
     cd slidown
