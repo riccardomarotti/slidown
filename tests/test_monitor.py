@@ -4,7 +4,9 @@ import os
 import time
 import tempfile
 
-from slidown import monitor
+from unittest.mock import MagicMock
+
+from slidown import monitor, core
 
 def test_check_changes_with_not_existing_path():
     previous = {
@@ -64,7 +66,6 @@ def test_check_changes_with_existing_modified_path():
         assert monitor.check_changes(previous, current) == expected_output
 
 def test_create_new_html_with_changed_slide():
-    from slidown import core
     core.generate_presentation_html = lambda file_name, theme: 'a new html text'
     core.get_changed_slide = lambda previous_html, new_html: 'the changed slide'
 
@@ -86,7 +87,6 @@ def test_create_new_html_with_changed_slide():
         assert expected_output, actual_output == expected_output
 
 def test_create_new_html_with_no_changes():
-    from slidown import core
     core.generate_presentation_html = lambda file_name, theme: 'generated html text'
 
     with tempfile.NamedTemporaryFile() as an_input_file:
@@ -105,3 +105,12 @@ def test_create_new_html_with_no_changes():
         }, {})
 
         assert actual_output == expected_output
+
+def test_load_new_html():
+    with tempfile.NamedTemporaryFile() as output_file:
+        mock_webview = MagicMock()
+        monitor.load_new_html('html text', (1,2), output_file.name, mock_webview)
+
+        assert open(output_file.name).read() == 'html text'
+        mock_webview.load.assert_called_with('file://' + output_file.name + '#/1/2')
+        mock_webview.reload.assert_called_with()
