@@ -114,3 +114,18 @@ def test_load_new_html():
         assert open(output_file.name).read() == 'html text'
         mock_webview.load.assert_called_with('file://' + output_file.name + '#/1/2')
         mock_webview.reload.assert_called_with()
+
+
+def test_refresh_theme():
+    with tempfile.NamedTemporaryFile() as output_file:
+        core.generate_presentation_html = MagicMock(return_value='some html text')
+        mock_webview = MagicMock()
+
+        monitor.refresh_presentation_theme('a file name',
+                                           mock_webview,
+                                           output_file.name,
+                                           'a theme')
+
+        assert open(output_file.name).read() == 'some html text'
+        mock_webview.load.assert_called_with('file://' + output_file.name)
+        core.generate_presentation_html.assert_called_with('a file name', 'a theme')
