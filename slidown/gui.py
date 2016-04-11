@@ -16,10 +16,11 @@ def generate_window(presentation_html_file,
                     window_title):
 
     layout = QtWidgets.QVBoxLayout()
-    web_view = WebViewWrapper(QtWebKitWidgets.QWebView())
-    web_view.load('file://' + presentation_html_file)
+    web_view = QtWebKitWidgets.QWebView()
+    wrapped_web_view = WebViewWrapper(web_view)
+    wrapped_web_view.load('file://' + presentation_html_file)
 
-    layout.addWidget(web_view.inner_webview())
+    layout.addWidget(web_view)
     main_widget = QtWidgets.QWidget()
     main_widget.setLayout(layout)
 
@@ -33,7 +34,7 @@ def generate_window(presentation_html_file,
 
     monitor.manage_md_file_changes(presentation_md_file,
                                     presentation_html_file,
-                                    web_view,
+                                    wrapped_web_view,
                                     QtScheduler(QtCore))
 
 
@@ -43,7 +44,7 @@ def generate_window(presentation_html_file,
     themes_combo.addItems(themes)
     themes_combo.activated.connect(lambda index: monitor.refresh_presentation_theme(
         presentation_md_file,
-        web_view,
+        wrapped_web_view,
         presentation_html_file,
         themes[index].lower()))
     lower_window_layout.addWidget(themes_combo)
@@ -105,6 +106,3 @@ class WebViewWrapper():
 
     def reload(self):
         self.webview.reload()
-
-    def inner_webview(self):
-        return self.webview
