@@ -4,6 +4,8 @@ from PyQt5 import QtCore
 from PyQt5 import QtWidgets
 from PyQt5 import QtWebKitWidgets
 
+from rx.concurrency import QtScheduler
+
 from slidown import monitor
 
 def create_qt_application(argv):
@@ -14,10 +16,10 @@ def generate_window(presentation_html_file,
                     window_title):
 
     layout = QtWidgets.QVBoxLayout()
-    web_view = QtWebKitWidgets.QWebView()
-    web_view.load(QtCore.QUrl('file://' + presentation_html_file))
+    web_view = WebViewWrapper(QtWebKitWidgets.QWebView())
+    web_view.load('file://' + presentation_html_file)
 
-    layout.addWidget(web_view)
+    layout.addWidget(web_view.inner_webview())
     main_widget = QtWidgets.QWidget()
     main_widget.setLayout(layout)
 
@@ -30,8 +32,9 @@ def generate_window(presentation_html_file,
     lower_window_layout.addWidget(mode_checkbox)
 
     monitor.manage_md_file_changes(presentation_md_file,
-                                   presentation_html_file,
-                                   web_view)
+                                    presentation_html_file,
+                                    web_view,
+                                    QtScheduler(QtCore))
 
 
     themes = ['White', 'Black', 'League', 'Beige', 'Sky',
@@ -91,3 +94,17 @@ def set_edit_mode(widget):
 
     widget.setGeometry(geometry)
     widget.show()
+
+
+class WebViewWrapper():
+    def __init__(self, webview):
+        self.webview = webview
+
+    def load(self, url):
+        self.webview.load(QtCore.QUrl(url))
+
+    def reload(self):
+        self.webview.reload()
+
+    def inner_webview(self):
+        return self.webview
