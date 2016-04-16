@@ -7,7 +7,8 @@ import bs4
 
 def _generate_presentation_html(presentation_md_text, theme='white'):
     reveal_js_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                              'reveal.js')
+                                  '..',
+                                  'reveal.js')
 
     setup_pandoc_for_pyinstaller()
 

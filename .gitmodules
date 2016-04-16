@@ -1,3 +1,3 @@
 [submodule "slidown/reveal.js"]
-	path = slidown/reveal.js
+	path = reveal.js
 	url = https://github.com/riccardomarotti/reveal.js.git
