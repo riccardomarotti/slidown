@@ -6,7 +6,7 @@ from PyQt5 import QtWebKitWidgets
 
 from rx.concurrency import QtScheduler
 
-from slidown import monitor
+from slidown import monitor, file_utils
 
 def create_qt_application(argv):
     return QtWidgets.QApplication(argv)
@@ -29,8 +29,14 @@ def generate_window(presentation_html_file,
     mode_checkbox.stateChanged.connect(lambda state: mode_change(state,
                                                                  main_widget))
 
+    open_editor_button = QtWidgets.QPushButton(text='Open in Editor')
+    open_editor_button.clicked.connect(lambda evt: file_utils.start(presentation_md_file))
+
+
     lower_window_layout = QtWidgets.QHBoxLayout()
     lower_window_layout.addWidget(mode_checkbox)
+    lower_window_layout.addWidget(open_editor_button)
+
 
     monitor.manage_md_file_changes(presentation_md_file,
                                     presentation_html_file,
