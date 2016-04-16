@@ -60,10 +60,18 @@ def generate_window(presentation_html_file,
 
 
 def ask_for_presentation_file_name(start_dir):
-    return QtWidgets.QFileDialog.getOpenFileName(None,
-                                          'Open presentation',
-                                          start_dir,
-                                          'Markdown files (*.md)')[0]
+    dialog = QtWidgets.QFileDialog(parent=None,
+                                  caption='Open presentation',
+                                  directory=start_dir,
+                                  filter='Markdown files (*.md)',
+                                  options=QtWidgets.QFileDialog.DontConfirmOverwrite)
+
+    dialog.setLabelText(QtWidgets.QFileDialog.Accept, 'Open')
+    file_name = None
+    if dialog.exec():
+        file_name = dialog.selectedFiles()[0]
+
+    return file_name
 
 def full_screen_change(mode, main_widget):
     {QtCore.Qt.Checked: main_widget.showFullScreen,

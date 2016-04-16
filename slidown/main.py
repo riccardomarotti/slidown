@@ -3,7 +3,7 @@
 import sys
 import os
 
-from slidown import gui, config
+from slidown import gui, config, file_utils
 
 
 app = gui.create_qt_application(sys.argv)
@@ -20,6 +20,9 @@ else:
 
 if not presentation_md_file:
     sys.exit(0)
+
+presentation_md_file = file_utils.add_md_extension(presentation_md_file)
+file_utils.touch(presentation_md_file)
 
 configuration['last_presentation'] = presentation_md_file
 config.save(configuration)
