@@ -1,3 +1,4 @@
+[![License LGPL](https://img.shields.io/badge/license-GPL_3-brightgreen.svg)](http://www.gnu.org/licenses/gpl-3.0.txt)
 [![Build Status](https://travis-ci.org/riccardomarotti/slidown.svg?branch=master)](https://travis-ci.org/riccardomarotti/slidown)
 [![Coverage Status](https://coveralls.io/repos/github/riccardomarotti/slidown/badge.svg?branch=master)](https://coveralls.io/github/riccardomarotti/slidown?branch=master)
 
