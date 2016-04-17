@@ -29,13 +29,17 @@ def generate_window(presentation_html_file,
     mode_checkbox.stateChanged.connect(lambda state: mode_change(state,
                                                                  main_widget))
 
-    open_editor_button = QtWidgets.QPushButton(text='Open in Editor')
+    open_editor_button = QtWidgets.QPushButton(text='Editor')
     open_editor_button.clicked.connect(lambda evt: file_utils.start(presentation_md_file))
+
+    open_editor_browser = QtWidgets.QPushButton(text='Browser')
+    open_editor_browser.clicked.connect(lambda evt: file_utils.start(presentation_html_file))
 
 
     lower_window_layout = QtWidgets.QHBoxLayout()
     lower_window_layout.addWidget(mode_checkbox)
     lower_window_layout.addWidget(open_editor_button)
+    lower_window_layout.addWidget(open_editor_browser)
 
 
     monitor.manage_md_file_changes(presentation_md_file,
