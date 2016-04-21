@@ -45,6 +45,9 @@ def test_check_changes_with_existing_not_modified_path():
         assert monitor.check_changes(previous, current) == expected_output
 
 def test_check_changes_with_existing_modified_path():
+    now = time.time()
+    then = now + 10
+
     with tempfile.NamedTemporaryFile() as a_file:
         current = 'anything'
 
@@ -54,8 +57,7 @@ def test_check_changes_with_existing_modified_path():
             'changed': False
         }
 
-        time.sleep(0.01) #allows to modified date to change
-        os.utime(a_file.name, None)
+        os.utime(a_file.name, (then, then))
 
         expected_output = {
             'filename': a_file.name,
