@@ -8,10 +8,10 @@ git-init:
 	git submodule init
 	git submodule update
 
-test:
+test: clean
 	$(tests_command) tests/**
 
-integration:
+integration: clean
 	$(tests_command) integration_tests/**
 
 atest:
@@ -26,3 +26,6 @@ pyinstaller:
 	rm -rf build/ dist/
 	pyinstaller slidown.spec
 	python delete_unused_libraries.py dist/slidown
+
+clean:
+	rm .coverage
