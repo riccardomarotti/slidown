@@ -28,4 +28,4 @@ pyinstaller:
 	python delete_unused_libraries.py dist/slidown
 
 clean:
-	rm .coverage
+	rm -f .coverage
