@@ -28,4 +28,4 @@ First of all, ensure to have [Python 3](https://www.python.org/),
 
 Here's a little preview:
 
-![Mini Demo](https://dl.dropboxusercontent.com/s/9y4js2il4aws4b5/demo-slidown.gif)
+![Mini Demo](https://dl.dropboxusercontent.com/s/od2cfw4ryz6affv/demo-slidown.gif)
