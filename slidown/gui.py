@@ -2,7 +2,7 @@
 
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
-from PyQt5 import QtWebKitWidgets
+from PyQt5 import QtWebEngineWidgets
 
 from rx.concurrency import QtScheduler
 
@@ -16,7 +16,7 @@ def generate_window(presentation_html_file,
                     window_title):
 
     layout = QtWidgets.QVBoxLayout()
-    web_view = QtWebKitWidgets.QWebView()
+    web_view = QtWebEngineWidgets.QWebEngineView()
     wrapped_web_view = WebViewWrapper(web_view)
     wrapped_web_view.load('file://' + presentation_html_file)
 
