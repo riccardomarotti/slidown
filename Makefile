@@ -9,10 +9,10 @@ git-init:
 	git submodule update
 
 test: clean
-	$(tests_command) tests/**
+	$(tests_command) tests
 
 integration: clean
-	$(tests_command) integration_tests/**
+	$(tests_command) integration_tests
 
 atest:
 	$(tests_command) $(filter-out $@,$(MAKECMDGOALS))
