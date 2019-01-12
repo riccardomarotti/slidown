@@ -3,5 +3,5 @@ pypandoc
 beautifulsoup4
 appdirs
 pytest
-pytest-cov
+pytest-cov==2.5.1
 python-coveralls
