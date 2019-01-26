@@ -5,6 +5,7 @@ import sys
 import pypandoc
 import bs4
 
+
 def _generate_presentation_html(presentation_md_text, theme='white'):
     reveal_js_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                   '..',
@@ -12,17 +13,19 @@ def _generate_presentation_html(presentation_md_text, theme='white'):
 
     setup_pandoc_for_pyinstaller()
 
-    return pypandoc.convert(presentation_md_text,
-                            'revealjs',
-                            extra_args=['-V', 'revealjs-url:' + reveal_js_path,
-                                        '--self-contained',
-                                        '-V', 'transition:slide',
-                                        '-V', 'theme:' + theme],
-                            format='md')
+    return pypandoc.convert_text(presentation_md_text,
+                                 'revealjs',
+                                 extra_args=['-V', 'revealjs-url:' + reveal_js_path,
+                                             '--self-contained',
+                                             '-V', 'transition:slide',
+                                             '-V', 'theme:' + theme],
+                                 format='md')
+
 
 def generate_presentation_html(presentation_md_file, theme='white'):
     md = open(presentation_md_file).read()
     return _generate_presentation_html(md, theme)
+
 
 def get_changed_slide(old_html, new_html):
     soup_old = bs4.BeautifulSoup(old_html, 'html.parser')
@@ -44,17 +47,18 @@ def get_changed_slide(old_html, new_html):
                               if index >= len(slides_old)
                               or slide.get_text().strip() != slides_old[index].get_text().strip()
                               or slide.attrs != slides_old[index].attrs
-    ]
+                              ]
 
     open('old.html', 'w').write(old_html)
     open('new.html', 'w').write(new_html)
     return changed_slides_indexes[0], 0
 
+
 def get_changed_with_vertical(soup_old, soup_new):
     slides_old = get_vertical_slides(soup_old)
     slides_new = get_vertical_slides(soup_new)
 
-    no_vertical_slides =  len(slides_old) == 0 or len(slides_new) == 0
+    no_vertical_slides = len(slides_old) == 0 or len(slides_new) == 0
     if no_vertical_slides:
         return -1, -1
 
@@ -73,7 +77,7 @@ def get_changed_with_vertical(soup_old, soup_new):
 
 def get_vertical_slides(soup):
     return [slide for slide in soup.find_all('section', attrs={'class': None})
-                  if slide.parent.name != 'section']
+            if slide.parent.name != 'section']
 
 
 def setup_pandoc_for_pyinstaller():
@@ -81,6 +85,7 @@ def setup_pandoc_for_pyinstaller():
         pypandoc._ensure_pandoc_path()
     except OSError as error:
         if hasattr(sys, '_MEIPASS'):
-            pypandoc.__pandoc_path = os.path.join(sys._MEIPASS,  'pandoc/pandoc')
+            pypandoc.__pandoc_path = os.path.join(
+                sys._MEIPASS,  'pandoc/pandoc')
         else:
             raise(error)
