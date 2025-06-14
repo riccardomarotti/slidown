@@ -29,3 +29,6 @@ First of all, ensure to have [Python 3](https://www.python.org/),
 Here's a little preview:
 
 ![Mini Demo](https://dl.dropboxusercontent.com/s/od2cfw4ryz6affv/demo-slidown.gif)
+
+If you're using Wayland, edit mode does not stay on top, for now, you need to set
+it manually...
