@@ -57,7 +57,11 @@ def load_new_html(html, changed_slide, output_file_name, web_view):
     slide_url = 'file://' + output_file_name + '#/' + "/".join(map(str,
                                                                    changed_slide))
 
-    web_view.load(slide_url)
+
+    def navigate_after_reload():
+        web_view.load(slide_url)
+    
+    web_view.webview.loadFinished.connect(navigate_after_reload)
     web_view.reload()
 
 def manage_md_file_changes(presentation_md_file,

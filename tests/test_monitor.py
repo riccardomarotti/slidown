@@ -114,8 +114,14 @@ def test_load_new_html():
         monitor.load_new_html('html text', (1,2), output_file.name, mock_webview)
 
         assert open(output_file.name).read() == 'html text'
-        mock_webview.load.assert_called_with('file://' + output_file.name + '#/1/2')
+
         mock_webview.reload.assert_called_with()
+        mock_webview.webview.loadFinished.connect.assert_called_once()
+        
+        callback = mock_webview.webview.loadFinished.connect.call_args[0][0]
+        callback()
+        
+        mock_webview.load.assert_called_with('file://' + output_file.name + '#/1/2')
 
 
 def test_refresh_theme():
