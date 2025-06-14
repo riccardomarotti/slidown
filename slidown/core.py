@@ -16,7 +16,8 @@ def _generate_presentation_html(presentation_md_text, theme='white'):
     return pypandoc.convert_text(presentation_md_text,
                                  'revealjs',
                                  extra_args=['-V', 'revealjs-url:' + reveal_js_path,
-                                             '--self-contained',
+                                             '--embed-resources',
+                                             '--standalone',
                                              '-V', 'transition:slide',
                                              '-V', 'theme:' + theme],
                                  format='md')
