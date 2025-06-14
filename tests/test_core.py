@@ -7,14 +7,18 @@ from slidown import core
 
 def test_get_changed_slide_with_same_html():
     html1 = '\
+<div class="slides">\
 <section class="slide">\
 <h1> A title </h1>\
 </section>\
+</div>\
 '
     html2 = '\
+<div class="slides">\
 <section class="slide">\
 <h1> A title </h1>\
 </section>\
+</div>\
 '
 
     with pytest.raises(RuntimeError):
@@ -22,25 +26,30 @@ def test_get_changed_slide_with_same_html():
 
 
 def test_first_slide_different():
-    html1 = '<section class="slide">Single Horizontal Slide</section>'
-    html2 = '<section class="slide">Single Horizontal Slide Different</section>'
+    html1 = '<div class="slides"><section class="slide">Single Horizontal Slide</section></div>'
+    html2 = '<div class="slides"><section class="slide">Single Horizontal Slide Different</section></div>'
 
     assert core.get_changed_slide(html1, html2) == (0,0)
 
 def test_second_slide_different():
     html1 = '\
+<div class="slides">\
 <section class="slide">First Horizontal Slide</section>\
 <section class="slide">Second Horizontal Slide</section>\
+</div>\
 '
     html2 = '\
+<div class="slides">\
 <section class="slide">First Horizontal Slide</section>\
 <section class="slide">Second  different Horizontal Slide</section>\
+</div>\
 '
     assert core.get_changed_slide(html1, html2) == (1,0)
 
 
 def test_add_new_horizontal():
     html1 = """
+<div class="slides">
 <section>
   <section id="horizontal-slide-1" class="titleslide slide level1">
     <h1>Horizontal slide 1</h1>
@@ -55,9 +64,11 @@ def test_add_new_horizontal():
       <h1>Vertical Slide 2</h1>
     </section>
   </section>
-</section>"""
+</section>
+</div>"""
 
     html2 = """
+<div class="slides">
 <section>
   <section id="horizontal-slide-1" class="titleslide slide level1">
     <h1>Horizontal slide 1</h1>
@@ -77,13 +88,15 @@ def test_add_new_horizontal():
   <section id="new-horizontal" class="titleslide slide level1">
     <h1>New Horizontal</h1>
   </section>
-</section>"""
+</section>
+</div>"""
 
     assert core.get_changed_slide(html1, html2) == (1, 0)
 
 
 def test_delete_last_horizontal():
     html1 = """
+<div class="slides">
 <section>
   <section id="horizontal-slide-1" class="titleslide slide level1">
     <h1>Horizontal slide 1</h1>
@@ -104,9 +117,11 @@ def test_delete_last_horizontal():
     <h1>New Horizontal</h1>
   </section>
 </section>
+</div>
 """
 
     html2 ="""
+<div class="slides">
 <section>
   <section id="horizontal-slide-1" class="titleslide slide level1">
     <h1>Horizontal slide 1</h1>
@@ -121,13 +136,15 @@ def test_delete_last_horizontal():
     <h1>Vertical Slide 2</h1>
   </section>
 </section>
-</section>"""
+</section>
+</div>"""
 
     assert core.get_changed_slide(html1, html2) == (1, 0)
 
 
 def test_more_complex():
     html1 = """
+<div class="slides">
 <section>
   <section id="horizontal-slide-1" class="titleslide slide level1">
     <h1>Horizontal slide 1</h1>
@@ -155,9 +172,11 @@ def test_more_complex():
 </section>
 <section><section id="horizontal-slide-3" class="titleslide slide level1">
   <h1>Horizontal slide 3</h1>
-</section></section>"""
+</section></section>
+</div>"""
 
     html2 = """
+<div class="slides">
 <section>
   <section id="horizontal-slide-1" class="titleslide slide level1">
     <h1>Horizontal slide 1</h1>
@@ -185,12 +204,14 @@ def test_more_complex():
 </section>
 <section><section id="horizontal-different-slide-3" class="titleslide slide level1">
   <h1>Horizontal different slide 3</h1>
-</section></section>"""
+</section></section>
+</div>"""
 
     assert core.get_changed_slide(html1, html2) == (2,0)
 
 def test_double_vertical():
     html1 = """
+<div class="slides">
 <section>
   <section id="first-vertical-slide-1" class="titleslide slide level1">
     <h1>First Vertical Slide 1</h1>
@@ -221,8 +242,10 @@ def test_double_vertical():
 </section></section><section><section id="vertical-slide-2-3" class="titleslide slide level2">
 <h1>Vertical Slide 2 3</h1>
 </section></section></section>
+</div>
 """
     html2 = """
+<div class="slides">
 <section>
   <section id="first-vertical-slide-1" class="titleslide slide level1">
     <h1>First Vertical Slide 1</h1>
@@ -253,6 +276,7 @@ def test_double_vertical():
 </section></section><section><section id="vertical-slide-2-3" class="titleslide slide level2">
 <h1>Vertical Slide 2 3</h1>
 </section></section></section>
+</div>
 """
 
     assert core.get_changed_slide(html1, html2) == (1, 2)
@@ -260,27 +284,32 @@ def test_double_vertical():
 
 def test_second_vertical_slide_different():
     html1 = """
+<div class="slides">
 <section><section id="single-horizontal-slide" class="titleslide slide level1">
 <h1>Single horizontal slide</h1>
 </section><section><section id="vertical-slide-1" class="titleslide slide level2">
 <h1>Vertical Slide 1</h1>
 </section></section><section><section id="vertical-slide-2" class="titleslide slide level2">
 <h1>Vertical Slide 2</h1></section>
-</section></section>"""
+</section></section>
+</div>"""
 
     html2 = """
+<div class="slides">
 <section><section id="single-horizontal-slide" class="titleslide slide level1">
 <h1>Single horizontal slide</h1>
 </section><section><section id="vertical-slide-1" class="titleslide slide level2">
 <h1>Vertical Slide 1</h1>
 </section></section><section><section id="vertical-different-slide-2" class="titleslide slide level2">
 <h1>Vertical different Slide 2</h1>
-</section></section></section>"""
+</section></section></section>
+</div>"""
 
     assert core.get_changed_slide(html1, html2) == (0,2)
 
 def test_bug_when_adding_background_images():
     html1 = """
+<div class="slides">
 <section id="big-title" class="slide level2" data-background="image url">
 <h1>Big Title</h1>
 </section><section id="title-1" class="slide level2" data-background="image url">
@@ -289,9 +318,11 @@ def test_bug_when_adding_background_images():
 <li>Item 1</li>
 <li>Item 2</li>
 </ul>
-</section>"""
+</section>
+</div>"""
 
     html2 = """
+<div class="slides">
 <section id="big-title" class="slide level2" data-background="image url">
 <h1>Big Title</h1>
 </section><section id="title-1" class="slide level2">
@@ -300,7 +331,8 @@ def test_bug_when_adding_background_images():
 <li>Item 1</li>
 <li>Item 2</li>
 </ul>
-</section>"""
+</section>
+</div>"""
 
     assert core.get_changed_slide(html1, html2) == (1,0)
 

@@ -50,13 +50,12 @@ def get_changed_slide(old_html, new_html):
                               or slide.attrs != slides_old[index].attrs
                               ]
 
-    open('old.html', 'w').write(old_html)
-    open('new.html', 'w').write(new_html)
     
     # Handle case where slides were removed
     if not changed_slides_indexes:
         if len(slides_new) < len(slides_old):
             # Slides were removed, navigate to the last existing slide
+            # But return the index where deletion occurred (first removed slide)
             return len(slides_new), 0
         else:
             # This shouldn't happen if we detect HTML differences
@@ -107,10 +106,6 @@ def get_changed_with_vertical(soup_old, soup_new):
 
 def get_horizontal_slides(soup):
     """Get top-level slides (horizontal navigation)"""
-    # In reveal.js 5.2.1, horizontal slides are:
-    # 1. Top-level sections without children (standalone)
-    # 2. Top-level sections with children (containers for vertical slides)
-    
     slides_div = soup.find('div', class_='slides')
     if not slides_div:
         return []
@@ -120,9 +115,10 @@ def get_horizontal_slides(soup):
 
 def get_vertical_slides(soup):
     """Get slide containers that have vertical slides (nested sections)"""
-    # Find top-level sections that contain other sections
+    # Get only horizontal slides (top-level) that contain vertical slides
+    horizontal_slides = get_horizontal_slides(soup)
     containers = []
-    for section in soup.find_all('section'):
+    for section in horizontal_slides:
         # Check if this section contains other sections (has vertical slides)
         child_sections = section.find_all('section', recursive=False)
         if child_sections:
