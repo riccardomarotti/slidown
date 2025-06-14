@@ -41,8 +41,8 @@ def get_changed_slide(old_html, new_html):
     if horizontal_index != -1:
         return horizontal_index, vertical_index
 
-    slides_old = soup_old.find_all('section', attrs={'class': 'slide'})
-    slides_new = soup_new.find_all('section', attrs={'class': 'slide'})
+    slides_old = get_horizontal_slides(soup_old)
+    slides_new = get_horizontal_slides(soup_new)
 
     changed_slides_indexes = [index for index, slide in enumerate(slides_new)
                               if index >= len(slides_old)
@@ -52,33 +52,82 @@ def get_changed_slide(old_html, new_html):
 
     open('old.html', 'w').write(old_html)
     open('new.html', 'w').write(new_html)
+    
+    # Handle case where slides were removed
+    if not changed_slides_indexes:
+        if len(slides_new) < len(slides_old):
+            # Slides were removed, navigate to the last existing slide
+            return len(slides_new), 0
+        else:
+            # This shouldn't happen if we detect HTML differences
+            return 0, 0
+    
     return changed_slides_indexes[0], 0
 
 
 def get_changed_with_vertical(soup_old, soup_new):
-    slides_old = get_vertical_slides(soup_old)
-    slides_new = get_vertical_slides(soup_new)
+    """Find changes in vertical slide structure"""
+    containers_old = get_vertical_slides(soup_old)
+    containers_new = get_vertical_slides(soup_new)
 
-    no_vertical_slides = len(slides_old) == 0 or len(slides_new) == 0
-    if no_vertical_slides:
+    # If no vertical slides, let horizontal logic handle it
+    if len(containers_old) == 0 or len(containers_new) == 0:
         return -1, -1
 
-    slide_removed = len(slides_old) > len(slides_new)
-    if slide_removed:
-        return len(slides_new), 0
+    # Compare each container (horizontal slide with verticals)
+    for h_index, container_new in enumerate(containers_new):
+        if h_index >= len(containers_old):
+            # New horizontal slide added
+            return h_index, 0
+            
+        container_old = containers_old[h_index]
+        
+        # Get child sections (vertical slides) within this container
+        children_old = container_old.find_all('section', recursive=False)
+        children_new = container_new.find_all('section', recursive=False)
+        
+        # Compare vertical slides within this container
+        for v_index, child_new in enumerate(children_new):
+            if v_index >= len(children_old):
+                # New vertical slide added
+                return h_index, v_index
+            
+            child_old = children_old[v_index]
+            if child_new.get_text().strip() != child_old.get_text().strip():
+                # Vertical slide content changed
+                return h_index, v_index
+    
+    # Check for removed slides
+    if len(containers_new) < len(containers_old):
+        return len(containers_new), 0
+        
+    # No changes found
+    return -1, -1
 
-    indexes = [(hindex, vindex) for hindex, parent_slide in enumerate(slides_new)
-               for vindex, child_slide in enumerate(list(parent_slide.children))
-               if len(slides_old) <= hindex
-               or vindex >= len(list(slides_old[hindex].children))
-               or child_slide != list(slides_old[hindex].children)[vindex]]
 
-    return indexes[0]
-
+def get_horizontal_slides(soup):
+    """Get top-level slides (horizontal navigation)"""
+    # In reveal.js 5.2.1, horizontal slides are:
+    # 1. Top-level sections without children (standalone)
+    # 2. Top-level sections with children (containers for vertical slides)
+    
+    slides_div = soup.find('div', class_='slides')
+    if not slides_div:
+        return []
+    
+    # Get direct children sections of the slides div
+    return slides_div.find_all('section', recursive=False)
 
 def get_vertical_slides(soup):
-    return [slide for slide in soup.find_all('section', attrs={'class': None})
-            if slide.parent.name != 'section']
+    """Get slide containers that have vertical slides (nested sections)"""
+    # Find top-level sections that contain other sections
+    containers = []
+    for section in soup.find_all('section'):
+        # Check if this section contains other sections (has vertical slides)
+        child_sections = section.find_all('section', recursive=False)
+        if child_sections:
+            containers.append(section)
+    return containers
 
 
 def setup_pandoc_for_pyinstaller():
