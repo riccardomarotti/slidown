@@ -96,12 +96,18 @@ def refresh_presentation_theme(file_name, web_view, output_file_name, theme):
     global current_theme, _active_workers
     current_theme = theme
     
+    if hasattr(web_view, 'show_loading'):
+        web_view.show_loading()
+    
     worker = ThemeChangeWorker(file_name, theme)
     _active_workers.append(worker)
     
     def on_html_generated(html):
         open(output_file_name, 'w').write(html)
         web_view.load(('file://' + output_file_name))
+        
+        if hasattr(web_view, 'hide_loading'):
+            web_view.hide_loading()
         
         _active_workers.remove(worker)
         worker.quit()

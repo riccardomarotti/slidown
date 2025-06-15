@@ -17,10 +17,53 @@ def generate_window(presentation_html_file,
 
     layout = QtWidgets.QVBoxLayout()
     web_view = QtWebEngineWidgets.QWebEngineView()
-    wrapped_web_view = WebViewWrapper(web_view)
+    
+    stacked_widget = QtWidgets.QStackedWidget()
+    
+    loading_widget = QtWidgets.QWidget()
+    loading_layout = QtWidgets.QVBoxLayout(loading_widget)
+    loading_layout.addStretch()
+    
+    spinner_label = QtWidgets.QLabel()
+    spinner_label.setAlignment(QtCore.Qt.AlignCenter)
+    spinner_label.setStyleSheet("font-size: 24px; color: #333;")
+    
+    spinner_chars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
+    spinner_timer = QtCore.QTimer()
+    spinner_index = [0]
+    
+    def update_spinner():
+        spinner_label.setText(spinner_chars[spinner_index[0]])
+        spinner_index[0] = (spinner_index[0] + 1) % len(spinner_chars)
+    
+    spinner_timer.timeout.connect(update_spinner)
+    spinner_timer.start(100)
+    update_spinner()
+    
+    loading_layout.addWidget(spinner_label)
+    
+    loading_label = QtWidgets.QLabel("Generating presentation...")
+    loading_label.setAlignment(QtCore.Qt.AlignCenter)
+    loading_label.setStyleSheet("font-size: 18px; color: #666; margin-top: 10px;")
+    loading_layout.addWidget(loading_label)
+    
+    loading_layout.addStretch()
+    
+    stacked_widget.addWidget(loading_widget)  # Index 0
+    stacked_widget.addWidget(web_view)        # Index 1
+    
+    stacked_widget.setCurrentIndex(0)
+    
+    wrapped_web_view = WebViewWrapper(web_view, stacked_widget, spinner_timer)
+    
+    def on_load_finished():
+        wrapped_web_view.hide_loading()
+    
+    web_view.loadFinished.connect(on_load_finished)
+    
     wrapped_web_view.load('file://' + presentation_html_file)
-
-    layout.addWidget(web_view)
+    
+    layout.addWidget(stacked_widget)
     main_widget = QtWidgets.QWidget()
     main_widget.setLayout(layout)
 
@@ -128,11 +171,25 @@ def set_edit_mode(widget):
 
 
 class WebViewWrapper():
-    def __init__(self, webview):
+    def __init__(self, webview, stacked_widget=None, spinner_timer=None):
         self.webview = webview
+        self.stacked_widget = stacked_widget
+        self.spinner_timer = spinner_timer
 
     def load(self, url):
         self.webview.load(QtCore.QUrl(url))
 
     def reload(self):
         self.webview.reload()
+        
+    def show_loading(self):
+        if self.stacked_widget:
+            self.stacked_widget.setCurrentIndex(0)
+            if self.spinner_timer:
+                self.spinner_timer.start()
+            
+    def hide_loading(self):
+        if self.stacked_widget:
+            self.stacked_widget.setCurrentIndex(1)
+            if self.spinner_timer:
+                self.spinner_timer.stop()

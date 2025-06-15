@@ -128,6 +128,9 @@ def test_refresh_theme():
     with tempfile.NamedTemporaryFile() as output_file:
         core.generate_presentation_html = MagicMock(return_value='some html text')
         mock_webview = MagicMock()
+        
+        mock_webview.show_loading = MagicMock()
+        mock_webview.hide_loading = MagicMock()
 
         # Create QApplication if it doesn't exist (needed for Qt signals)
         from PyQt5.QtWidgets import QApplication
@@ -150,4 +153,6 @@ def test_refresh_theme():
 
         assert open(output_file.name).read() == 'some html text'
         mock_webview.load.assert_called_with('file://' + output_file.name)
+        mock_webview.show_loading.assert_called_once()
+        mock_webview.hide_loading.assert_called_once()
         core.generate_presentation_html.assert_called_with('a file name', 'a theme')
