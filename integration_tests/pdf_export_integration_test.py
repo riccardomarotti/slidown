@@ -47,11 +47,14 @@ Final slide without notes.
             mock_dialog_class.AcceptSave = 1
             mock_dialog_class.Accepted = 1
             
-            # Mock QMessageBox to avoid GUI popups
-            with patch('slidown.gui.QtWidgets.QMessageBox'):
+            # Mock file_utils.start to avoid opening PDF and QMessageBox for GUI
+            with patch('slidown.gui.file_utils.start') as mock_start:
                 
                 # Actually call export_to_pdf - this will use real pypandoc
                 export_to_pdf(md_file_path)
+                
+                # Verify PDF was opened
+                mock_start.assert_called_once_with(pdf_path)
                 
                 # Verify PDF was created
                 assert os.path.exists(pdf_path), "PDF file should be created"

@@ -61,12 +61,8 @@ def export_to_pdf(presentation_md_file):
                 extra_args=['--pdf-engine=wkhtmltopdf', '--slide-level=2']
             )
             
-            # Show success message
-            msg = QtWidgets.QMessageBox()
-            msg.setIcon(QtWidgets.QMessageBox.Information)
-            msg.setWindowTitle("Export Successful")
-            msg.setText(f"PDF exported successfully to:\n{pdf_path}")
-            msg.exec()
+            # Open PDF automatically
+            file_utils.start(pdf_path)
             
         except Exception as e:
             # Show error message
