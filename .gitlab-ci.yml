@@ -28,6 +28,9 @@ test:
     - Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
     - export DISPLAY=:99.0
     - make all_tests
+    # Upload coverage to Coveralls
+    - pip install coveralls
+    - coveralls
   artifacts:
     reports:
       coverage_report:
