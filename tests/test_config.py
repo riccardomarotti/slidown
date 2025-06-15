@@ -58,3 +58,18 @@ def test_not_existing_config_directory():
 
     assert open(configuration_file).read() == "{}"
     assert config_hash == {}
+
+def test_presentation_theme_management():
+    with tempfile.TemporaryDirectory() as temp_dir:
+        import appdirs
+        appdirs.user_config_dir = lambda any_appname: temp_dir
+        
+        test_file = '/path/to/test.md'
+        
+        assert config.get_presentation_theme(test_file) == 'white'
+        
+        config.save_presentation_theme(test_file, 'dark')
+        assert config.get_presentation_theme(test_file) == 'dark'
+        
+        another_file = '/path/to/another.md'
+        assert config.get_presentation_theme(another_file) == 'white'

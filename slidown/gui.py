@@ -6,7 +6,7 @@ from PyQt5 import QtWebEngineWidgets
 
 from rx.concurrency import QtScheduler
 
-from slidown import monitor, file_utils
+from slidown import monitor, file_utils, config
 
 def create_qt_application(argv):
     return QtWidgets.QApplication(argv)
@@ -52,11 +52,23 @@ def generate_window(presentation_html_file,
               'Night', 'Serif', 'Simple', 'Solarized']
     themes_combo = QtWidgets.QComboBox()
     themes_combo.addItems(themes)
-    themes_combo.activated.connect(lambda index: monitor.refresh_presentation_theme(
-        presentation_md_file,
-        wrapped_web_view,
-        presentation_html_file,
-        themes[index].lower()))
+    
+    saved_theme = config.get_presentation_theme(presentation_md_file)
+    saved_theme_capitalized = saved_theme.capitalize()
+    if saved_theme_capitalized in themes:
+        themes_combo.setCurrentText(saved_theme_capitalized)
+        monitor.current_theme = saved_theme
+    
+    def on_theme_changed(index):
+        selected_theme = themes[index].lower()
+        config.save_presentation_theme(presentation_md_file, selected_theme)
+        monitor.refresh_presentation_theme(
+            presentation_md_file,
+            wrapped_web_view,
+            presentation_html_file,
+            selected_theme)
+    
+    themes_combo.activated.connect(on_theme_changed)
     lower_window_layout.addWidget(themes_combo)
 
     group = QtWidgets.QGroupBox()
@@ -67,6 +79,12 @@ def generate_window(presentation_html_file,
 
     main_widget.setWindowTitle(window_title)
     main_widget.show()
+    
+    monitor.refresh_presentation_theme(
+        presentation_md_file,
+        wrapped_web_view,
+        presentation_html_file,
+        saved_theme)
 
 
 def ask_for_presentation_file_name(start_dir):

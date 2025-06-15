@@ -27,3 +27,17 @@ def save(configuration):
                                'config.json')
     with open(config_file, 'w') as f:
         json.dump(configuration, f)
+
+def get_presentation_theme(presentation_file):
+    """Get the saved theme for a specific presentation file"""
+    config = load()
+    presentations = config.get('presentations', {})
+    return presentations.get(presentation_file, 'white')
+
+def save_presentation_theme(presentation_file, theme):
+    """Save the theme for a specific presentation file"""
+    config = load()
+    if 'presentations' not in config:
+        config['presentations'] = {}
+    config['presentations'][presentation_file] = theme
+    save(config)
