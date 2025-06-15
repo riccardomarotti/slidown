@@ -1,6 +1,6 @@
 export PYTHONPATH=$(CURDIR)
 
-tests_command = py.test --cov=slidown --cov-append
+tests_command = pytest --cov=slidown --cov-append --cov-report=xml
 init:
 	pip3 install -r requirements.txt
 
