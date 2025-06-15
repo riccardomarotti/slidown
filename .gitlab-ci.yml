@@ -28,9 +28,7 @@ test:
     - Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
     - export DISPLAY=:99.0
     - make all_tests
-    # Upload coverage to Coveralls (GitLab CI specific)
-    - pip install coveralls
-    - COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN coveralls --service=gitlab-ci
+    # Coverage report is available as GitLab artifact
   artifacts:
     reports:
       coverage_report:
