@@ -6,10 +6,75 @@ from PyQt5 import QtWebEngineWidgets
 
 from rx.concurrency import QtScheduler
 
-from slidown import monitor, file_utils, config
+from slidown import monitor, file_utils, config, core
+import os
+import pypandoc
 
 def create_qt_application(argv):
     return QtWidgets.QApplication(argv)
+
+def export_to_pdf(presentation_md_file):
+    """Export presentation to PDF without speaker notes"""
+    dialog = QtWidgets.QFileDialog()
+    dialog.setAcceptMode(QtWidgets.QFileDialog.AcceptSave)
+    dialog.setNameFilter("PDF files (*.pdf)")
+    dialog.setDefaultSuffix("pdf")
+    
+    # Set default filename based on markdown file
+    base_name = os.path.splitext(os.path.basename(presentation_md_file))[0]
+    dialog.selectFile(f"{base_name}.pdf")
+    
+    if dialog.exec() == QtWidgets.QFileDialog.Accepted:
+        pdf_path = dialog.selectedFiles()[0]
+        
+        try:
+            # Read markdown content
+            with open(presentation_md_file, 'r', encoding='utf-8') as f:
+                md_content = f.read()
+            
+            # Remove speaker notes (lines starting with ::: {.notes})
+            lines = md_content.split('\n')
+            filtered_lines = []
+            in_notes = False
+            
+            for line in lines:
+                if line.strip().startswith('::: {.notes}'):
+                    in_notes = True
+                    continue
+                elif line.strip() == ':::' and in_notes:
+                    in_notes = False
+                    continue
+                elif not in_notes:
+                    filtered_lines.append(line)
+            
+            filtered_content = '\n'.join(filtered_lines)
+            
+            # Setup pandoc for pyinstaller (same as in core.py)
+            core.setup_pandoc_for_pyinstaller()
+            
+            # Convert to PDF using pandoc with wkhtmltopdf
+            pypandoc.convert_text(
+                filtered_content,
+                'pdf',
+                format='md',
+                outputfile=pdf_path,
+                extra_args=['--pdf-engine=wkhtmltopdf', '--slide-level=2']
+            )
+            
+            # Show success message
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Information)
+            msg.setWindowTitle("Export Successful")
+            msg.setText(f"PDF exported successfully to:\n{pdf_path}")
+            msg.exec()
+            
+        except Exception as e:
+            # Show error message
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setWindowTitle("Export Error")
+            msg.setText(f"Failed to export PDF:\n{str(e)}")
+            msg.exec()
 
 def generate_window(presentation_html_file,
                     presentation_md_file,
@@ -78,11 +143,14 @@ def generate_window(presentation_html_file,
     open_editor_browser = QtWidgets.QPushButton(text='Browser')
     open_editor_browser.clicked.connect(lambda evt: file_utils.start(presentation_html_file))
 
+    export_pdf_button = QtWidgets.QPushButton(text='Export PDF')
+    export_pdf_button.clicked.connect(lambda evt: export_to_pdf(presentation_md_file))
 
     lower_window_layout = QtWidgets.QHBoxLayout()
     lower_window_layout.addWidget(mode_checkbox)
     lower_window_layout.addWidget(open_editor_button)
     lower_window_layout.addWidget(open_editor_browser)
+    lower_window_layout.addWidget(export_pdf_button)
 
 
     monitor.manage_md_file_changes(presentation_md_file,
