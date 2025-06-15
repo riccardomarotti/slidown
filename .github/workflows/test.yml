@@ -52,9 +52,9 @@ jobs:
       env:
         QT_QPA_PLATFORM: offscreen
 
-    - name: Upload coverage to Codecov
-      if: matrix.python-version == '3.12'
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage.xml
-        fail_ci_if_error: true
+    # - name: Upload coverage to Codecov
+    #   if: matrix.python-version == '3.12'
+    #   uses: codecov/codecov-action@v3
+    #   with:
+    #     file: ./coverage.xml
+    #     fail_ci_if_error: true
