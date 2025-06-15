@@ -1,0 +1,41 @@
+image: python:3.12-slim
+
+variables:
+  DEBIAN_FRONTEND: noninteractive
+  QT_QPA_PLATFORM: offscreen
+  PYTHONPATH: $CI_PROJECT_DIR
+
+stages:
+  - test
+
+before_script:
+  - apt-get update -qq
+  - apt-get install -y -qq pandoc git
+  # Install Qt5 system libraries
+  - apt-get install -y -qq qt5-qmake qtbase5-dev qtwebengine5-dev
+  # Install Qt dependencies for headless testing
+  - apt-get install -y -qq xvfb libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0
+  # Additional Qt runtime dependencies
+  - apt-get install -y -qq libqt5gui5 libqt5widgets5 libqt5webenginewidgets5
+  # Initialize submodules
+  - git submodule update --init --recursive
+  # Set up Python environment
+  - pip install --upgrade pip
+  - pip install -r requirements.txt
+
+test:
+  stage: test
+  script:
+    # Set up virtual display for Qt GUI tests
+    - Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+    - export DISPLAY=:99.0
+    # Run tests
+    - make all_tests
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+    paths:
+      - coverage.xml
+    expire_in: 1 week
