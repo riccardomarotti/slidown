@@ -79,12 +79,6 @@ def generate_window(presentation_html_file,
 
     main_widget.setWindowTitle(window_title)
     main_widget.show()
-    
-    monitor.refresh_presentation_theme(
-        presentation_md_file,
-        wrapped_web_view,
-        presentation_html_file,
-        saved_theme)
 
 
 def ask_for_presentation_file_name(start_dir):
