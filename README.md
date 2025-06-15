@@ -15,8 +15,9 @@ Still not released, but you can start it from source.
 
 First of all, ensure to have [Python 3](https://www.python.org/),
 [Qt5](http://www.qt.io/),
-[PyQt5](https://riverbankcomputing.com/software/pyqt/intro) and
-[Pandoc](http://pandoc.org/) installed. Then:
+[PyQt5](https://riverbankcomputing.com/software/pyqt/intro),
+[Pandoc](http://pandoc.org/) and
+[wkhtmltopdf](https://wkhtmltopdf.org/) (for PDF export) installed. Then:
 
     git clone https://github.com/riccardomarotti/slidown.git
     cd slidown
