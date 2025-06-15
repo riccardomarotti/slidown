@@ -6,8 +6,22 @@ import os
 
 import rx
 from rx import Observable
+from PyQt5.QtCore import QThread, pyqtSignal
 
 current_theme = 'white'
+_active_workers = []  # Keep references to prevent garbage collection
+
+class ThemeChangeWorker(QThread):
+    html_generated = pyqtSignal(str)
+    
+    def __init__(self, file_name, theme):
+        super().__init__()
+        self.file_name = file_name
+        self.theme = theme
+    
+    def run(self):
+        html = core.generate_presentation_html(self.file_name, self.theme)
+        self.html_generated.emit(html)
 
 def check_changes(previous, cur):
     current_modify_date = previous['previous_modify_date']
@@ -79,8 +93,19 @@ def manage_md_file_changes(presentation_md_file,
         )
 
 def refresh_presentation_theme(file_name, web_view, output_file_name, theme):
-    html = core.generate_presentation_html(file_name, theme)
-    open(output_file_name, 'w').write(html)
-    web_view.load(('file://' + output_file_name))
-    global current_theme
+    global current_theme, _active_workers
     current_theme = theme
+    
+    worker = ThemeChangeWorker(file_name, theme)
+    _active_workers.append(worker)
+    
+    def on_html_generated(html):
+        open(output_file_name, 'w').write(html)
+        web_view.load(('file://' + output_file_name))
+        
+        _active_workers.remove(worker)
+        worker.quit()
+        worker.deleteLater()
+    
+    worker.html_generated.connect(on_html_generated)
+    worker.start()

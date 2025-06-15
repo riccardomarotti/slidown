@@ -129,10 +129,24 @@ def test_refresh_theme():
         core.generate_presentation_html = MagicMock(return_value='some html text')
         mock_webview = MagicMock()
 
+        # Create QApplication if it doesn't exist (needed for Qt signals)
+        from PyQt5.QtWidgets import QApplication
+        app = QApplication.instance()
+        if app is None:
+            app = QApplication([])
+
         monitor.refresh_presentation_theme('a file name',
                                            mock_webview,
                                            output_file.name,
                                            'a theme')
+
+        # Wait for the worker thread to complete and process events
+        import time
+        for _ in range(10):  # Try multiple times
+            app.processEvents()
+            time.sleep(0.01)
+            if open(output_file.name).read():
+                break
 
         assert open(output_file.name).read() == 'some html text'
         mock_webview.load.assert_called_with('file://' + output_file.name)
