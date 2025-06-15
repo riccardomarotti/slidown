@@ -27,8 +27,12 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y pandoc
+        # Install Qt5 system libraries
+        sudo apt-get install -y qt5-qmake qtbase5-dev qtwebengine5-dev
         # Install Qt dependencies for headless testing
         sudo apt-get install -y xvfb libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0
+        # Additional Qt runtime dependencies
+        sudo apt-get install -y libqt5gui5 libqt5widgets5 libqt5webenginewidgets5
 
     - name: Install Python dependencies
       run: |
