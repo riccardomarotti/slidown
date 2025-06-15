@@ -1,4 +1,4 @@
-reactivex>=4.0.0
+rx==1.5.9
 pypandoc
 beautifulsoup4
 appdirs
