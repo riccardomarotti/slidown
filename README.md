@@ -11,19 +11,67 @@ Slidown should allow to do everything you can do with
 
 Conversions from Markdown to Reveal.js are made with [Pandoc](http://pandoc.org/).
 
-Still not released, but you can start it from source.
+## Installation
 
-First of all, ensure to have [Python 3](https://www.python.org/),
-[Qt5](http://www.qt.io/),
-[Pandoc](http://pandoc.org/) and
-[wkhtmltopdf](https://wkhtmltopdf.org/) (for PDF export) installed. Then:
+### Quick Installation (Recommended)
 
-    git clone https://github.com/riccardomarotti/slidown.git
-    cd slidown
-    make git-init
-    make init
-    make start
+```bash
+pip install slidown
+```
 
+### Dependencies
+
+Slidown requires [Pandoc](http://pandoc.org/) and optionally [wkhtmltopdf](https://wkhtmltopdf.org/) for PDF export:
+
+**Ubuntu/Debian:**
+```bash
+sudo apt-get install pandoc wkhtmltopdf
+```
+
+**macOS:**
+```bash
+brew install pandoc wkhtmltopdf
+```
+
+**Windows:**
+Download and install from the official websites.
+
+### From Source
+
+If you want to run from source, ensure you have the dependencies above, then:
+
+```bash
+git clone https://github.com/riccardomarotti/slidown.git
+cd slidown
+make git-init
+make init
+make start
+```
+
+## Usage
+
+### Command Line
+
+After installation, you can start Slidown from the command line:
+
+```bash
+# Open a specific markdown file
+slidown presentation.md
+
+# Or just start Slidown and choose a file
+slidown
+```
+
+### Features
+
+- **Live Preview**: Automatically refreshes presentation when you edit the markdown file
+- **PDF Export**: Export presentations to PDF format (requires wkhtmltopdf)
+- **Theme Support**: Multiple built-in themes (White, Black, League, Beige, Sky, Night, Serif, Simple, Solarized)
+- **Theme Memory**: Remembers your theme choice for each presentation
+- **Speaker Notes**: Support for presenter notes (excluded from PDF export)
+- **Full-screen Mode**: Presentation mode for displaying slides
+
+## Preview
 
 Here's a little preview:
 

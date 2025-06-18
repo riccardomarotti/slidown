@@ -1,8 +1,6 @@
+# Runtime dependencies
 pypandoc
 beautifulsoup4
 appdirs
 PyQt5
 PyQtWebEngine
-pytest
-pytest-cov==2.5.1
-python-coveralls

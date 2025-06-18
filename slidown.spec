@@ -1,22 +1,41 @@
 # -*- mode: python -*-
 
 import os
+import shutil
 
 block_cipher = None
 
 def reveal_js_path():
+    """Include reveal.js files from root directory"""
     paths = []
-    for root, dirs, files in os.walk('slidown/reveal.js'):
-        for name in dirs:
-            full_path = os.path.join(root, name)
-            paths.append((os.path.join(full_path, '*'),
-                          full_path.split('slidown/')[1]))
-
+    reveal_root = 'reveal.js'
+    if os.path.exists(reveal_root):
+        for root, dirs, files in os.walk(reveal_root):
+            for file in files:
+                full_path = os.path.join(root, file)
+                rel_path = os.path.relpath(full_path, '.')
+                paths.append((full_path, os.path.dirname(rel_path)))
     return paths
 
-a = Analysis(['slidown/slidown.py'],
+def get_system_binaries():
+    """Get system binaries for pandoc and wkhtmltopdf"""
+    binaries = []
+    
+    # Add pandoc
+    pandoc_path = shutil.which('pandoc')
+    if pandoc_path:
+        binaries.append((pandoc_path, 'pandoc'))
+    
+    # Add wkhtmltopdf
+    wkhtmltopdf_path = shutil.which('wkhtmltopdf')
+    if wkhtmltopdf_path:
+        binaries.append((wkhtmltopdf_path, 'wkhtmltopdf'))
+    
+    return binaries
+
+a = Analysis(['slidown/main.py'],
              pathex=['slidown'],
-             binaries=[(os.popen('which pandoc').read().strip(), 'pandoc')],
+             binaries=get_system_binaries(),
              datas=reveal_js_path(),
              hiddenimports=[],
              hookspath=[],

@@ -1,0 +1,23 @@
+# Include reveal.js files
+recursive-include reveal.js *
+
+# Include documentation
+include README.md
+include license.txt
+
+# Include requirements files
+include requirements.txt
+include requirements-dev.txt
+
+# Exclude development files
+exclude Makefile
+exclude slidown.spec
+exclude delete_unused_libraries.py
+recursive-exclude tests *
+recursive-exclude integration_tests *
+exclude .coverage
+exclude coverage.xml
+global-exclude *.pyc
+global-exclude __pycache__
+recursive-exclude build *
+recursive-exclude dist *

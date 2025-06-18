@@ -1,0 +1,6 @@
+# Development dependencies
+-r requirements.txt
+pytest
+pytest-cov>=2.5.1
+python-coveralls
+pyinstaller
