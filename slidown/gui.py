@@ -4,7 +4,7 @@ from PyQt5 import QtCore
 from PyQt5 import QtWidgets
 from PyQt5 import QtWebEngineWidgets
 
-from rx.concurrency import QtScheduler
+# No longer using RxPY - using Qt's QFileSystemWatcher for event-driven file monitoring
 
 from slidown import monitor, file_utils, config, core
 import os
@@ -127,6 +127,9 @@ def generate_window(presentation_html_file,
     layout.addWidget(stacked_widget)
     main_widget = QtWidgets.QWidget()
     main_widget.setLayout(layout)
+    
+    # Store watcher reference for cleanup
+    main_widget._watcher = None
 
     mode_checkbox = QtWidgets.QCheckBox()
     mode_checkbox.setText('Edit mode')
@@ -149,22 +152,22 @@ def generate_window(presentation_html_file,
     lower_window_layout.addWidget(export_pdf_button)
 
 
-    monitor.manage_md_file_changes(presentation_md_file,
-                                    presentation_html_file,
-                                    wrapped_web_view,
-                                    QtScheduler(QtCore))
-
-
     themes = ['White', 'Black', 'League', 'Beige', 'Sky',
               'Night', 'Serif', 'Simple', 'Solarized']
     themes_combo = QtWidgets.QComboBox()
     themes_combo.addItems(themes)
     
+    # Load saved theme BEFORE starting file monitoring
     saved_theme = config.get_presentation_theme(presentation_md_file)
     saved_theme_capitalized = saved_theme.capitalize()
     if saved_theme_capitalized in themes:
         themes_combo.setCurrentText(saved_theme_capitalized)
         monitor.current_theme = saved_theme
+
+    # Store the file watcher for proper cleanup - start AFTER theme is set
+    main_widget._watcher = monitor.manage_md_file_changes(presentation_md_file,
+                                                          presentation_html_file,
+                                                          wrapped_web_view)
     
     def on_theme_changed(index):
         selected_theme = themes[index].lower()
@@ -185,6 +188,14 @@ def generate_window(presentation_html_file,
     layout.addWidget(group)
 
     main_widget.setWindowTitle(window_title)
+    
+    # Add cleanup when widget closes
+    def cleanup_on_close(event):
+        if main_widget._watcher:
+            main_widget._watcher.deleteLater()
+        event.accept()
+    
+    main_widget.closeEvent = cleanup_on_close
     main_widget.show()
 
 

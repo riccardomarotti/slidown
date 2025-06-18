@@ -8,6 +8,15 @@ from slidown import gui, config, file_utils
 
 app = gui.create_qt_application(sys.argv)
 
+# Global cleanup for any remaining subscriptions
+def cleanup_app():
+    # Import rx here to avoid circular imports if needed
+    import rx
+    # Additional cleanup if needed
+    pass
+
+app.aboutToQuit.connect(cleanup_app)
+
 configuration = config.load()
 
 if len(sys.argv) == 2:

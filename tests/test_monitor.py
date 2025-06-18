@@ -4,7 +4,7 @@ import os
 import time
 import tempfile
 
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from slidown import monitor, core
 
@@ -108,7 +108,15 @@ def test_create_new_html_with_no_changes():
 
         assert actual_output == expected_output
 
+def test_file_monitor_creation():
+    """Test that FileMonitor can be created with a file path"""
+    with tempfile.NamedTemporaryFile() as temp_file:
+        file_monitor = monitor.FileMonitor(temp_file.name)
+        assert file_monitor.file_path == temp_file.name
+        assert file_monitor.current_html == ''
+
 def test_load_new_html():
+    """Test load_new_html function"""
     with tempfile.NamedTemporaryFile() as output_file:
         mock_webview = MagicMock()
         monitor.load_new_html('html text', (1,2), output_file.name, mock_webview)
@@ -123,10 +131,45 @@ def test_load_new_html():
         
         mock_webview.load.assert_called_with('file://' + output_file.name + '#/1/2')
 
+def test_manage_md_file_changes():
+    """Test that manage_md_file_changes creates a QFileSystemWatcher"""
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as temp_file:
+        temp_file.write('# Test slide')
+        temp_file.flush()
+        
+        # Create QApplication if it doesn't exist
+        from PyQt5.QtWidgets import QApplication
+        app = QApplication.instance()
+        if app is None:
+            app = QApplication([])
+        
+        mock_webview = MagicMock()
+        
+        # Mock the core functions to avoid pandoc dependency
+        with patch('slidown.core.generate_presentation_html') as mock_generate, \
+             patch('slidown.core.get_changed_slide') as mock_get_slide:
+            
+            mock_generate.return_value = 'mocked html content'
+            mock_get_slide.return_value = (0, 0)
+            
+            with tempfile.NamedTemporaryFile() as output_file:
+                watcher = monitor.manage_md_file_changes(temp_file.name, 
+                                                        output_file.name, 
+                                                        mock_webview)
+                
+                # Verify watcher was created and file is being watched
+                from PyQt5.QtCore import QFileSystemWatcher
+                assert isinstance(watcher, QFileSystemWatcher)
+                assert temp_file.name in watcher.files()
+                
+                # Cleanup
+                watcher.deleteLater()
+                
+        os.unlink(temp_file.name)
 
 def test_refresh_theme():
+    """Test refresh_presentation_theme function"""
     with tempfile.NamedTemporaryFile() as output_file:
-        core.generate_presentation_html = MagicMock(return_value='some html text')
         mock_webview = MagicMock()
         
         mock_webview.show_loading = MagicMock()
@@ -138,21 +181,24 @@ def test_refresh_theme():
         if app is None:
             app = QApplication([])
 
-        monitor.refresh_presentation_theme('a file name',
-                                           mock_webview,
-                                           output_file.name,
-                                           'a theme')
+        with patch('slidown.core.generate_presentation_html') as mock_generate:
+            mock_generate.return_value = 'some html text'
+            
+            monitor.refresh_presentation_theme('a file name',
+                                               mock_webview,
+                                               output_file.name,
+                                               'a theme')
 
-        # Wait for the worker thread to complete and process events
-        import time
-        for _ in range(10):  # Try multiple times
-            app.processEvents()
-            time.sleep(0.01)
-            if open(output_file.name).read():
-                break
+            # Wait for the worker thread to complete and process events
+            import time
+            for _ in range(10):  # Try multiple times
+                app.processEvents()
+                time.sleep(0.01)
+                if open(output_file.name).read():
+                    break
 
-        assert open(output_file.name).read() == 'some html text'
-        mock_webview.load.assert_called_with('file://' + output_file.name)
-        mock_webview.show_loading.assert_called_once()
-        mock_webview.hide_loading.assert_called_once()
-        core.generate_presentation_html.assert_called_with('a file name', 'a theme')
+            assert open(output_file.name).read() == 'some html text'
+            mock_webview.load.assert_called_with('file://' + output_file.name)
+            mock_webview.show_loading.assert_called_once()
+            mock_webview.hide_loading.assert_called_once()
+            mock_generate.assert_called_with('a file name', 'a theme')
