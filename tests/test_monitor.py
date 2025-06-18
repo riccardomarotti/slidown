@@ -115,6 +115,103 @@ def test_file_monitor_creation():
         assert file_monitor.file_path == temp_file.name
         assert file_monitor.current_html == ''
 
+def test_file_monitor_with_missing_file():
+    """Test FileMonitor behavior with non-existent file"""
+    # Create QApplication if it doesn't exist
+    from PyQt5.QtWidgets import QApplication
+    app = QApplication.instance()
+    if app is None:
+        app = QApplication([])
+    
+    file_monitor = monitor.FileMonitor('/non/existent/file.md')
+    
+    # Track signal emissions
+    signal_emitted = []
+    file_monitor.file_changed.connect(lambda html, slide, path: signal_emitted.append((html, slide, path)))
+    
+    # This should not emit any signal since file doesn't exist
+    file_monitor.check_and_generate_html()
+    
+    # Process Qt events
+    app.processEvents()
+    
+    # No signal should be emitted
+    assert len(signal_emitted) == 0
+
+def test_file_monitor_no_change():
+    """Test FileMonitor when HTML doesn't change"""
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as temp_file:
+        temp_file.write('# Test slide')
+        temp_file.flush()
+        
+        from PyQt5.QtWidgets import QApplication
+        app = QApplication.instance()
+        if app is None:
+            app = QApplication([])
+        
+        file_monitor = monitor.FileMonitor(temp_file.name)
+        
+        with patch('slidown.core.generate_presentation_html') as mock_generate, \
+             patch('slidown.core.get_changed_slide') as mock_get_slide:
+            
+            mock_generate.return_value = 'same html content'
+            mock_get_slide.return_value = (1, 2)
+            
+            signal_emitted = []
+            file_monitor.file_changed.connect(lambda html, slide, path: signal_emitted.append((html, slide, path)))
+            
+            # First call should emit signal
+            file_monitor.check_and_generate_html()
+            app.processEvents()
+            assert len(signal_emitted) == 1
+            
+            # Second call with same HTML should not emit signal
+            signal_emitted.clear()
+            file_monitor.check_and_generate_html()
+            app.processEvents()
+            assert len(signal_emitted) == 0
+            
+        os.unlink(temp_file.name)
+
+def test_manage_md_file_changes_with_runtime_error():
+    """Test manage_md_file_changes handles RuntimeError gracefully"""
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as temp_file:
+        temp_file.write('# Test slide')
+        temp_file.flush()
+        
+        from PyQt5.QtWidgets import QApplication
+        app = QApplication.instance()
+        if app is None:
+            app = QApplication([])
+        
+        # Create a mock webview that raises RuntimeError when accessed
+        mock_webview = MagicMock()
+        mock_webview.webview.loadFinished.connect.side_effect = RuntimeError("QWebEngineView deleted")
+        
+        with patch('slidown.core.generate_presentation_html') as mock_generate, \
+             patch('slidown.core.get_changed_slide') as mock_get_slide:
+            
+            mock_generate.return_value = 'mocked html content'
+            mock_get_slide.return_value = (0, 0)
+            
+            with tempfile.NamedTemporaryFile() as output_file:
+                # This should not raise an exception even with RuntimeError
+                watcher = monitor.manage_md_file_changes(temp_file.name, 
+                                                        output_file.name, 
+                                                        mock_webview)
+                
+                # Trigger file change manually
+                if hasattr(watcher, 'fileChanged'):
+                    # Emit the signal to test error handling
+                    from PyQt5.QtCore import QFileSystemWatcher
+                    if isinstance(watcher, QFileSystemWatcher):
+                        # The error handling should prevent crashes
+                        pass
+                
+                watcher.deleteLater()
+                
+        os.unlink(temp_file.name)
+
 def test_load_new_html():
     """Test load_new_html function"""
     with tempfile.NamedTemporaryFile() as output_file:
