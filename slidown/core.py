@@ -6,10 +6,20 @@ import pypandoc
 import bs4
 
 
+def get_reveal_js_path():
+    """Get the path to reveal.js, handling both regular execution and PyInstaller"""
+    if hasattr(sys, '_MEIPASS'):
+        # Running in PyInstaller bundle
+        return os.path.join(sys._MEIPASS, 'reveal.js')
+    else:
+        # Running from source
+        return os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                           '..',
+                           'reveal.js')
+
+
 def _generate_presentation_html(presentation_md_text, theme='white'):
-    reveal_js_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                  '..',
-                                  'reveal.js')
+    reveal_js_path = get_reveal_js_path()
 
     setup_pandoc_for_pyinstaller()
 
