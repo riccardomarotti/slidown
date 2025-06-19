@@ -46,7 +46,6 @@ git clone https://github.com/riccardomarotti/slidown.git
 cd slidown
 make git-init
 make init
-make start
 ```
 
 ### Usage
