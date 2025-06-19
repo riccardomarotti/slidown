@@ -11,19 +11,35 @@ Slidown should allow to do everything you can do with
 
 Conversions from Markdown to Reveal.js are made with [Pandoc](http://pandoc.org/).
 
-## Installation
+### Using Binary Release
 
-### Dependencies
+Download the latest binary release from [GitHub Releases](https://github.com/riccardomarotti/slidown/releases) and extract it:
 
-Slidown requires [Pandoc](http://pandoc.org/) and optionally [wkhtmltopdf](https://wkhtmltopdf.org/) for PDF export:
+```bash
+# Download the latest version (replace VERSION with the actual version number)
+wget https://github.com/riccardomarotti/slidown/releases/download/vVERSION/slidown-linux-x86_64-vVERSION.tar.gz
+tar -xzf slidown-linux-x86_64-vVERSION.tar.gz
+cd slidown
+./slidown presentation.md
+```
+
+For example, for version 0:
+```bash
+wget https://github.com/riccardomarotti/slidown/releases/download/v0/slidown-linux-x86_64-v0.tar.gz
+tar -xzf slidown-linux-x86_64-v0.tar.gz
+cd slidown
+./slidown presentation.md
+```
+
+### Using From Source
+
+If you want to run from source, ensure you have the dependencies [Pandoc](http://pandoc.org/) and optionally [wkhtmltopdf](https://wkhtmltopdf.org/) for PDF export:
 
 ```bash
 sudo apt-get install pandoc wkhtmltopdf
 ```
 
-### From Source
-
-If you want to run from source, ensure you have the dependencies above, then:
+then:
 
 ```bash
 git clone https://github.com/riccardomarotti/slidown.git
@@ -33,9 +49,7 @@ make init
 make start
 ```
 
-## Usage
-
-### Command Line
+### Usage
 
 After building from source, you can start Slidown:
 
@@ -47,25 +61,7 @@ python3 slidown/main.py presentation.md
 make start
 ```
 
-### Using Binary Release
 
-Download the latest binary release from GitHub and extract it:
-
-```bash
-wget https://github.com/riccardomarotti/slidown/releases/latest/download/slidown-linux-x86_64.tar.gz
-tar -xzf slidown-linux-x86_64.tar.gz
-cd slidown
-./slidown presentation.md
-```
-
-### Features
-
-- **Live Preview**: Automatically refreshes presentation when you edit the markdown file
-- **PDF Export**: Export presentations to PDF format (requires wkhtmltopdf)
-- **Theme Support**: Multiple built-in themes (White, Black, League, Beige, Sky, Night, Serif, Simple, Solarized)
-- **Theme Memory**: Remembers your theme choice for each presentation
-- **Speaker Notes**: Support for presenter notes (excluded from PDF export)
-- **Full-screen Mode**: Presentation mode for displaying slides
 
 ## Preview
 
