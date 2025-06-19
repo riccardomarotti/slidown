@@ -83,7 +83,7 @@ jobs:
         tar -czf slidown-linux-x86_64.tar.gz slidown/
     
     - name: Upload binary artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: binary-linux
         path: dist/slidown-linux-x86_64.tar.gz
@@ -97,7 +97,7 @@ jobs:
     - uses: actions/checkout@v4
     
     - name: Download all artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
     
     - name: Get version from tag
       id: get_version
