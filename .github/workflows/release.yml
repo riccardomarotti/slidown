@@ -158,6 +158,7 @@ jobs:
   publish-pypi:
     name: Publish to PyPI
     runs-on: ubuntu-latest
+    environment: PyPI
     needs: [test, github-release]
     
     steps:
