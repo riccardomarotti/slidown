@@ -1,0 +1,147 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # Triggers on version tags like v1.0.0
+
+jobs:
+  test:
+    name: Test before release
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y pandoc wkhtmltopdf
+        sudo apt-get install -y qt5-qmake qtbase5-dev qtwebengine5-dev
+        sudo apt-get install -y xvfb libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0
+        sudo apt-get install -y libqt5gui5 libqt5widgets5 libqt5webenginewidgets5
+    
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install coverage pytest-cov
+    
+    - name: Run tests
+      run: |
+        export QT_QPA_PLATFORM=offscreen
+        export DISPLAY=:99.0
+        Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+        make all_tests
+      env:
+        QT_QPA_PLATFORM: offscreen
+
+# Removed wheel build for now - focusing on binary releases only
+
+  build-linux-binary:
+    name: Build Linux binary
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y pandoc wkhtmltopdf
+        sudo apt-get install -y qt5-qmake qtbase5-dev qtwebengine5-dev
+    
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+    
+    - name: Build binary with PyInstaller
+      run: |
+        pyinstaller slidown.spec
+        python delete_unused_libraries.py dist/slidown
+    
+    - name: Package binary
+      run: |
+        cd dist
+        tar -czf slidown-linux-x86_64.tar.gz slidown/
+    
+    - name: Upload binary artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: binary-linux
+        path: dist/slidown-linux-x86_64.tar.gz
+
+  github-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: [test, build-linux-binary]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Download all artifacts
+      uses: actions/download-artifact@v3
+    
+    - name: Get version from tag
+      id: get_version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+    
+    - name: Generate release notes
+      id: release_notes
+      run: |
+        echo "RELEASE_NOTES<<EOF" >> $GITHUB_OUTPUT
+        echo "## Slidown v${{ steps.get_version.outputs.VERSION }}" >> $GITHUB_OUTPUT
+        echo "" >> $GITHUB_OUTPUT
+        echo "### Features" >> $GITHUB_OUTPUT
+        echo "- Live markdown presentation preview with reveal.js" >> $GITHUB_OUTPUT
+        echo "- PDF export functionality (requires wkhtmltopdf)" >> $GITHUB_OUTPUT
+        echo "- Multiple presentation themes with memory" >> $GITHUB_OUTPUT
+        echo "- Speaker notes support (excluded from PDF export)" >> $GITHUB_OUTPUT
+        echo "- Event-driven file monitoring (no more crashes!)" >> $GITHUB_OUTPUT
+        echo "- CLI command: \`slidown presentation.md\`" >> $GITHUB_OUTPUT
+        echo "" >> $GITHUB_OUTPUT
+        echo "### Installation" >> $GITHUB_OUTPUT
+        echo '```bash' >> $GITHUB_OUTPUT
+        echo "# Download and extract the binary" >> $GITHUB_OUTPUT
+        echo "wget https://github.com/riccardomarotti/slidown/releases/download/v${{ steps.get_version.outputs.VERSION }}/slidown-linux-x86_64.tar.gz" >> $GITHUB_OUTPUT
+        echo "tar -xzf slidown-linux-x86_64.tar.gz" >> $GITHUB_OUTPUT
+        echo "cd slidown" >> $GITHUB_OUTPUT
+        echo "./slidown presentation.md" >> $GITHUB_OUTPUT
+        echo "" >> $GITHUB_OUTPUT
+        echo "# Install system dependencies (Ubuntu/Debian)" >> $GITHUB_OUTPUT
+        echo "sudo apt-get install pandoc wkhtmltopdf" >> $GITHUB_OUTPUT
+        echo '```' >> $GITHUB_OUTPUT
+        echo "" >> $GITHUB_OUTPUT
+        echo "### Download" >> $GITHUB_OUTPUT
+        echo "- **Linux binary**: slidown-linux-x86_64.tar.gz (standalone executable, no Python required)" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ github.ref }}
+        name: Slidown v${{ steps.get_version.outputs.VERSION }}
+        body: ${{ steps.release_notes.outputs.RELEASE_NOTES }}
+        draft: false
+        prerelease: false
+        files: |
+          binary-linux/slidown-linux-x86_64.tar.gz
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

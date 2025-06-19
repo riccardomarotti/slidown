@@ -13,28 +13,13 @@ Conversions from Markdown to Reveal.js are made with [Pandoc](http://pandoc.org/
 
 ## Installation
 
-### Quick Installation (Recommended)
-
-```bash
-pip install slidown
-```
-
 ### Dependencies
 
 Slidown requires [Pandoc](http://pandoc.org/) and optionally [wkhtmltopdf](https://wkhtmltopdf.org/) for PDF export:
 
-**Ubuntu/Debian:**
 ```bash
 sudo apt-get install pandoc wkhtmltopdf
 ```
-
-**macOS:**
-```bash
-brew install pandoc wkhtmltopdf
-```
-
-**Windows:**
-Download and install from the official websites.
 
 ### From Source
 
@@ -52,14 +37,25 @@ make start
 
 ### Command Line
 
-After installation, you can start Slidown from the command line:
+After building from source, you can start Slidown:
 
 ```bash
 # Open a specific markdown file
-slidown presentation.md
+python3 slidown/main.py presentation.md
 
 # Or just start Slidown and choose a file
-slidown
+make start
+```
+
+### Using Binary Release
+
+Download the latest binary release from GitHub and extract it:
+
+```bash
+wget https://github.com/riccardomarotti/slidown/releases/latest/download/slidown-linux-x86_64.tar.gz
+tar -xzf slidown-linux-x86_64.tar.gz
+cd slidown
+./slidown presentation.md
 ```
 
 ### Features
