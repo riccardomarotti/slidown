@@ -15,13 +15,15 @@ files_to_delete = map(lambda file: os.path.join(argv[1], file).strip(),
 
 # Also remove problematic system libraries that can conflict
 system_libs_to_remove = [
-    'libstdc++.so.6',
+    'libstdc++.so.6',      # C++ standard library version conflicts
     'libgcc_s.so.1', 
     'libc.so.6',
     'libm.so.6',
     'libpthread.so.0',
     'libdl.so.2',
-    'librt.so.1'
+    'librt.so.1',
+    'libgio-2.0.so.0',     # GLib I/O library version conflicts
+    'libglib-2.0.so.0'     # GLib core library version conflicts
 ]
 
 for file in files_to_delete:
