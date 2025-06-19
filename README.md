@@ -46,13 +46,7 @@ git clone https://github.com/riccardomarotti/slidown.git
 cd slidown
 make git-init
 make init
-```
 
-### Usage
-
-After building from source, you can start Slidown:
-
-```bash
 # Open a specific markdown file
 python3 slidown/main.py presentation.md
 
