@@ -139,18 +139,15 @@ jobs:
         # Replace version placeholders
         sed -i "s/{{VERSION}}/$VERSION/g" release_notes.md
         
-        # Use a unique delimiter to avoid conflicts
-        DELIMITER="RELEASE_NOTES_$(date +%s)"
-        echo "RELEASE_NOTES<<$DELIMITER" >> $GITHUB_OUTPUT
-        cat release_notes.md >> $GITHUB_OUTPUT
-        echo "$DELIMITER" >> $GITHUB_OUTPUT
+        # Set release notes file path for next step
+        echo "RELEASE_NOTES_FILE=release_notes.md" >> $GITHUB_OUTPUT
     
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ github.ref }}
         name: Slidown v${{ steps.get_version.outputs.VERSION }}
-        body: ${{ steps.release_notes.outputs.RELEASE_NOTES }}
+        body_path: ${{ steps.release_notes.outputs.RELEASE_NOTES_FILE }}
         draft: false
         prerelease: false
         files: |
