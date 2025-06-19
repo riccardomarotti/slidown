@@ -139,9 +139,11 @@ jobs:
         # Replace version placeholders
         sed -i "s/{{VERSION}}/$VERSION/g" release_notes.md
         
-        echo "RELEASE_NOTES<<EOF" >> $GITHUB_OUTPUT
+        # Use a unique delimiter to avoid conflicts
+        DELIMITER="RELEASE_NOTES_$(date +%s)"
+        echo "RELEASE_NOTES<<$DELIMITER" >> $GITHUB_OUTPUT
         cat release_notes.md >> $GITHUB_OUTPUT
-        echo "EOF" >> $GITHUB_OUTPUT
+        echo "$DELIMITER" >> $GITHUB_OUTPUT
     
     - name: Create Release
       uses: softprops/action-gh-release@v1
