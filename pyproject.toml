@@ -7,12 +7,12 @@ name = "slidown"
 dynamic = ["version"]
 description = "A Deckset-like presentation tool using reveal.js and Pandoc"
 readme = "README.md"
-license = {text = "MIT"}
+license = "GPL-3.0-only"
 authors = [
-    {name = "Slidown Contributors", email = "slidown@example.com"}
+    {name = "Riccardo Marotti", email = "slidown@ric.mozmail.com"}
 ]
 maintainers = [
-    {name = "Slidown Contributors", email = "slidown@example.com"}
+    {name = "Riccardo Marotti", email = "slidown@ric.mozmail.com"}
 ]
 keywords = ["presentation", "markdown", "reveal.js", "pandoc", "slides"]
 classifiers = [
@@ -48,9 +48,9 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/slidown/slidown"
-Repository = "https://github.com/slidown/slidown"
-"Bug Tracker" = "https://github.com/slidown/slidown/issues"
+Homepage = "https://github.com/riccardomarotti/slidown"
+Repository = "https://github.com/riccardomarotti/slidown"
+"Bug Tracker" = "https://github.com/riccardomarotti/slidown/issues"
 
 [project.scripts]
 slidown = "slidown.main:main"

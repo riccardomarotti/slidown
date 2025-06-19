@@ -31,7 +31,20 @@ cd slidown
 ./slidown presentation.md
 ```
 
-### Using From Source
+### From PyPI
+
+Install slidown using pip:
+
+```bash
+pip install slidown
+```
+
+Then run it:
+```bash
+slidown presentation.md
+```
+
+### From Source
 
 If you want to run from source, ensure you have the dependencies [Pandoc](http://pandoc.org/) and optionally [wkhtmltopdf](https://wkhtmltopdf.org/) for PDF export:
 

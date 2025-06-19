@@ -1,6 +1,6 @@
 """Version information for Slidown."""
 
-__version__ = "1.0.0"
-__author__ = "Slidown Contributors"
-__email__ = "slidown@example.com"
+__version__ = "0"
+__author__ = "Riccardo Marotti"
+__email__ = "slidown@ric.mozmail.com"
 __description__ = "A Deckset-like presentation tool using reveal.js and Pandoc"
