@@ -3,10 +3,21 @@
 import os
 from sys import argv
 
+print(f"Starting library cleanup script with args: {argv}")
+
 if len(argv) != 2:
     print("Usage:")
     print(argv[0] + ": directory")
     exit(0)
+
+target_dir = argv[1]
+print(f"Target directory: {target_dir}")
+
+if not os.path.exists(target_dir):
+    print(f"ERROR: Directory {target_dir} does not exist!")
+    exit(1)
+
+print(f"Directory contents: {os.listdir(target_dir)}")
 
 # Find unused libraries
 files_to_delete = set(os.popen('find '+ argv[1]  + ' -maxdepth 1 -not -type d | xargs ldd -u | cut -d "/" -s -f 4 ').readlines())
