@@ -113,31 +113,34 @@ jobs:
     - name: Generate release notes
       id: release_notes
       run: |
+        VERSION=${{ steps.get_version.outputs.VERSION }}
+        
+        # Try to extract changelog content for this version
+        if grep -q "## \[$VERSION\]" CHANGELOG.md; then
+          # Extract content between this version and the next ## section
+          sed -n "/## \[$VERSION\]/,/^## /p" CHANGELOG.md | sed '$d' > changelog_section.md
+          
+          # Combine with installation instructions from template
+          echo "## Slidown v$VERSION" > release_notes.md
+          echo "" >> release_notes.md
+          # Skip the first line (version header) from changelog
+          tail -n +2 changelog_section.md >> release_notes.md
+          echo "" >> release_notes.md
+          echo "### Installation" >> release_notes.md
+          sed -n '/### Installation/,/### Download/p' .github/release-template.md | sed '$d' | tail -n +2 >> release_notes.md
+          echo "" >> release_notes.md
+          echo "### Download" >> release_notes.md
+          sed -n '/### Download/,$p' .github/release-template.md | tail -n +2 >> release_notes.md
+        else
+          # Fallback to template approach
+          sed "s/{{VERSION}}/$VERSION/g" .github/release-template.md > release_notes.md
+        fi
+        
+        # Replace version placeholders
+        sed -i "s/{{VERSION}}/$VERSION/g" release_notes.md
+        
         echo "RELEASE_NOTES<<EOF" >> $GITHUB_OUTPUT
-        echo "## Slidown v${{ steps.get_version.outputs.VERSION }}" >> $GITHUB_OUTPUT
-        echo "" >> $GITHUB_OUTPUT
-        echo "### Features" >> $GITHUB_OUTPUT
-        echo "- Live markdown presentation preview with reveal.js" >> $GITHUB_OUTPUT
-        echo "- PDF export functionality (requires wkhtmltopdf)" >> $GITHUB_OUTPUT
-        echo "- Multiple presentation themes with memory" >> $GITHUB_OUTPUT
-        echo "- Speaker notes support (excluded from PDF export)" >> $GITHUB_OUTPUT
-        echo "- Event-driven file monitoring (no more crashes!)" >> $GITHUB_OUTPUT
-        echo "- CLI command: \`slidown presentation.md\`" >> $GITHUB_OUTPUT
-        echo "" >> $GITHUB_OUTPUT
-        echo "### Installation" >> $GITHUB_OUTPUT
-        echo '```bash' >> $GITHUB_OUTPUT
-        echo "# Download and extract the binary" >> $GITHUB_OUTPUT
-        echo "wget https://github.com/riccardomarotti/slidown/releases/download/v${{ steps.get_version.outputs.VERSION }}/slidown-linux-x86_64-v${{ steps.get_version.outputs.VERSION }}.tar.gz" >> $GITHUB_OUTPUT
-        echo "tar -xzf slidown-linux-x86_64-v${{ steps.get_version.outputs.VERSION }}.tar.gz" >> $GITHUB_OUTPUT
-        echo "cd slidown" >> $GITHUB_OUTPUT
-        echo "./slidown presentation.md" >> $GITHUB_OUTPUT
-        echo "" >> $GITHUB_OUTPUT
-        echo "# Install system dependencies (Ubuntu/Debian)" >> $GITHUB_OUTPUT
-        echo "sudo apt-get install pandoc wkhtmltopdf" >> $GITHUB_OUTPUT
-        echo '```' >> $GITHUB_OUTPUT
-        echo "" >> $GITHUB_OUTPUT
-        echo "### Download" >> $GITHUB_OUTPUT
-        echo "- **Linux binary**: slidown-linux-x86_64-v${{ steps.get_version.outputs.VERSION }}.tar.gz (standalone executable, no Python required)" >> $GITHUB_OUTPUT
+        cat release_notes.md >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
     
     - name: Create Release
