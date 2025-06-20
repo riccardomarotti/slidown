@@ -23,10 +23,10 @@ cd slidown
 ./slidown presentation.md
 ```
 
-For example, for version 1:
+For example, for version 2:
 ```bash
-wget https://github.com/riccardomarotti/slidown/releases/download/v1/slidown-linux-x86_64-v1.tar.gz
-tar -xzf slidown-linux-x86_64-v1.tar.gz
+wget https://github.com/riccardomarotti/slidown/releases/download/v2/slidown-linux-x86_64-v2.tar.gz
+tar -xzf slidown-linux-x86_64-v2.tar.gz
 cd slidown
 ./slidown presentation.md
 ```
