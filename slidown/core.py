@@ -7,15 +7,25 @@ import bs4
 
 
 def get_reveal_js_path():
-    """Get the path to reveal.js, handling both regular execution and PyInstaller"""
+    """Get the path to reveal.js, handling PyInstaller, pip installation, and source"""
     if hasattr(sys, '_MEIPASS'):
         # Running in PyInstaller bundle
         return os.path.join(sys._MEIPASS, 'reveal.js')
     else:
-        # Running from source
-        return os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                           '..',
-                           'reveal.js')
+        # Try different possible locations
+        possible_paths = [
+            # Pip installation: reveal.js inside slidown package
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), 'reveal.js'),
+            # Source development: reveal.js in parent directory  
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'reveal.js'),
+        ]
+        
+        for path in possible_paths:
+            if os.path.exists(path):
+                return path
+                
+        # If none exist, raise an error with diagnostic info
+        raise FileNotFoundError(f"reveal.js directory not found. Searched in: {possible_paths}")
 
 
 def _generate_presentation_html(presentation_md_text, theme='white'):

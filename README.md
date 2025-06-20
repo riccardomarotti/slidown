@@ -39,6 +39,14 @@ Install slidown using pip:
 pip install slidown
 ```
 
+**Prerequisites**: You need to install Pandoc and wkhtmltopdf separately:
+
+```bash
+# Ubuntu/Debian
+sudo apt-get install pandoc wkhtmltopdf
+
+```
+
 Then run it:
 ```bash
 slidown presentation.md
