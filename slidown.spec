@@ -36,7 +36,7 @@ def get_system_binaries():
 a = Analysis(['slidown/main.py'],
              pathex=['slidown'],
              binaries=get_system_binaries(),
-             datas=reveal_js_path(),
+             datas=reveal_js_path() + [('icon/slidown.png', 'icon')],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
@@ -53,7 +53,8 @@ exe = EXE(pyz,
           debug=False,
           strip=True,
           upx=True,
-          console=False )
+          console=False,
+          icon='icon/slidown.png' )
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,

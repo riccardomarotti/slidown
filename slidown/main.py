@@ -8,7 +8,14 @@ from slidown import gui, config, file_utils
 
 def main():
     """Main entry point for the slidown application."""
+    # Force X11 mode for icon compatibility (works on both X11 and Wayland systems)
+    import os
+    os.environ['QT_QPA_PLATFORM'] = 'xcb'
+    
     app = gui.create_qt_application(sys.argv)
+    
+    # Set desktop file name for proper system integration
+    app.setDesktopFileName('slidown')
 
     # Global cleanup for any remaining subscriptions
     def cleanup_app():

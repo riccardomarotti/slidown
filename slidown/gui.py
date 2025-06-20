@@ -11,7 +11,28 @@ import os
 import pypandoc
 
 def create_qt_application(argv):
-    return QtWidgets.QApplication(argv)
+    app = QtWidgets.QApplication(argv)
+    
+    # Set application properties for better Linux compatibility
+    app.setApplicationName("Slidown")
+    app.setApplicationDisplayName("Slidown")
+    app.setOrganizationName("Slidown")
+    app.setApplicationVersion("1.0")
+    
+    # Set application icon at startup with absolute path
+    import sys
+    if hasattr(sys, '_MEIPASS'):
+        icon_path = os.path.join(sys._MEIPASS, 'icon', 'slidown.png')
+    else:
+        # Use absolute path for icon
+        icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'icon', 'slidown.png')
+    
+    if os.path.exists(icon_path):
+        from PyQt5.QtGui import QIcon
+        icon = QIcon(icon_path)
+        app.setWindowIcon(icon)  # Application level icon
+    
+    return app
 
 def export_to_pdf(presentation_md_file):
     """Export presentation to PDF without speaker notes"""
@@ -188,6 +209,18 @@ def generate_window(presentation_html_file,
     layout.addWidget(group)
 
     main_widget.setWindowTitle(window_title)
+    
+    # Set window icon (will work in X11 mode)
+    import sys
+    if hasattr(sys, '_MEIPASS'):
+        icon_path = os.path.join(sys._MEIPASS, 'icon', 'slidown.png')
+    else:
+        icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'icon', 'slidown.png')
+    
+    if os.path.exists(icon_path):
+        from PyQt5.QtGui import QIcon
+        icon = QIcon(icon_path)
+        main_widget.setWindowIcon(icon)
     
     # Add cleanup when widget closes
     def cleanup_on_close(event):
