@@ -63,7 +63,14 @@ class FileMonitor(QThread):
             new_html = core.generate_presentation_html(self.file_path, theme=current_theme)
             
             if new_html != self.current_html:
-                changed_slide = core.get_changed_slide(self.current_html, new_html)
+                if self.current_html:  # Only get changed slide if we have previous HTML
+                    try:
+                        changed_slide = core.get_changed_slide(self.current_html, new_html)
+                    except:
+                        changed_slide = (0, 0)
+                else:
+                    changed_slide = (0, 0)  # First time, go to first slide
+                    
                 self.current_html = new_html
                 
                 if changed_slide is not None:
