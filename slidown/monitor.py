@@ -63,7 +63,12 @@ class FileMonitor(QThread):
             new_html = core.generate_presentation_html(self.file_path, theme=current_theme)
             
             if new_html != self.current_html:
-                changed_slide = core.get_changed_slide(self.current_html, new_html)
+                try:
+                    changed_slide = core.get_changed_slide(self.current_html, new_html)
+                except:
+                    # Fallback to first slide if get_changed_slide fails
+                    changed_slide = (0, 0)
+                    
                 self.current_html = new_html
                 
                 if changed_slide is not None:
@@ -76,12 +81,24 @@ def load_new_html(html, changed_slide, output_file_name, web_view):
                                                                    changed_slide))
 
     def navigate_after_reload():
-        web_view.load(slide_url)
-        # Disconnect after use to prevent accumulation
-        web_view.webview.loadFinished.disconnect(navigate_after_reload)
+        try:
+            # Check if webview still exists before using it
+            if hasattr(web_view, 'webview') and web_view.webview:
+                web_view.load(slide_url)
+                # Disconnect after use to prevent accumulation
+                web_view.webview.loadFinished.disconnect(navigate_after_reload)
+        except RuntimeError:
+            # Webview has been deleted, ignore
+            pass
     
-    web_view.webview.loadFinished.connect(navigate_after_reload)
-    web_view.reload()
+    try:
+        # Check if webview still exists before connecting
+        if hasattr(web_view, 'webview') and web_view.webview:
+            web_view.webview.loadFinished.connect(navigate_after_reload)
+            web_view.reload()
+    except RuntimeError:
+        # Webview has been deleted, ignore
+        pass
 
 def manage_md_file_changes(presentation_md_file,
                            presentation_html_file,
