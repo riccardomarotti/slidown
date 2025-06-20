@@ -24,8 +24,15 @@ def get_reveal_js_path():
             if os.path.exists(path):
                 return path
                 
-        # If none exist, raise an error with diagnostic info
-        raise FileNotFoundError(f"reveal.js directory not found. Searched in: {possible_paths}")
+        # If none exist, provide detailed diagnostic info
+        error_msg = (
+            f"reveal.js directory not found.\n"
+            f"Searched in: {possible_paths}\n"
+            f"Current working directory: {os.getcwd()}\n"
+            f"Python executable: {sys.executable}\n"
+            f"__file__ location: {__file__}"
+        )
+        raise FileNotFoundError(error_msg)
 
 
 def _generate_presentation_html(presentation_md_text, theme='white'):

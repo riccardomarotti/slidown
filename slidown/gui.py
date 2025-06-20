@@ -122,8 +122,6 @@ def generate_window(presentation_html_file,
     
     web_view.loadFinished.connect(on_load_finished)
     
-    wrapped_web_view.load('file://' + presentation_html_file)
-    
     layout.addWidget(stacked_widget)
     main_widget = QtWidgets.QWidget()
     main_widget.setLayout(layout)
@@ -164,10 +162,13 @@ def generate_window(presentation_html_file,
         themes_combo.setCurrentText(saved_theme_capitalized)
         monitor.current_theme = saved_theme
 
-    # Store the file watcher for proper cleanup - start AFTER theme is set
+    # Initialize file watcher BEFORE loading HTML to ensure content is ready
     main_widget._watcher = monitor.manage_md_file_changes(presentation_md_file,
                                                           presentation_html_file,
                                                           wrapped_web_view)
+    
+    # Load HTML AFTER file monitor is initialized and has generated content
+    wrapped_web_view.load('file://' + presentation_html_file)
     
     def on_theme_changed(index):
         selected_theme = themes[index].lower()

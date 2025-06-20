@@ -4,11 +4,12 @@ from slidown import core
 
 import os
 
-from PyQt5.QtCore import QThread, pyqtSignal, QFileSystemWatcher
+from PyQt5.QtCore import QThread, pyqtSignal, QFileSystemWatcher, QMutex
 
 current_theme = 'white'
 _active_workers = []  # Keep references to prevent garbage collection
 _active_watcher = None  # Global file watcher to ensure only one is active
+_monitor_mutex = QMutex()  # Thread safety for global state
 
 class ThemeChangeWorker(QThread):
     html_generated = pyqtSignal(str)
@@ -63,13 +64,11 @@ class FileMonitor(QThread):
             new_html = core.generate_presentation_html(self.file_path, theme=current_theme)
             
             if new_html != self.current_html:
-                if self.current_html:  # Only get changed slide if we have previous HTML
-                    try:
-                        changed_slide = core.get_changed_slide(self.current_html, new_html)
-                    except:
-                        changed_slide = (0, 0)
-                else:
-                    changed_slide = (0, 0)  # First time, go to first slide
+                try:
+                    changed_slide = core.get_changed_slide(self.current_html, new_html)
+                except:
+                    # Fallback to first slide if get_changed_slide fails (e.g., empty HTML)
+                    changed_slide = (0, 0)
                     
                 self.current_html = new_html
                 
@@ -94,26 +93,36 @@ def manage_md_file_changes(presentation_md_file,
                            presentation_html_file,
                            web_view,
                            scheduler=None):
-    global _active_watcher, _active_workers
+    global _active_watcher, _active_workers, _monitor_mutex
     
-    # Stop previous watcher if exists
-    if _active_watcher:
-        _active_watcher.deleteLater()
-    
-    # Clear previous workers
-    for worker in _active_workers:
-        worker.quit()
-        worker.wait()
-        worker.deleteLater()
-    _active_workers.clear()
+    # Thread-safe cleanup of previous instances
+    _monitor_mutex.lock()
+    try:
+        # Stop previous watcher if exists
+        if _active_watcher:
+            _active_watcher.deleteLater()
+            _active_watcher = None
+        
+        # Clear previous workers
+        for worker in _active_workers:
+            worker.quit()
+            worker.wait()
+            worker.deleteLater()
+        _active_workers.clear()
+    finally:
+        _monitor_mutex.unlock()
     
     # Create file system watcher
-    _active_watcher = QFileSystemWatcher()
-    _active_watcher.addPath(presentation_md_file)
-    
-    # Create file monitor
-    file_monitor = FileMonitor(presentation_md_file)
-    _active_workers.append(file_monitor)
+    _monitor_mutex.lock()
+    try:
+        _active_watcher = QFileSystemWatcher()
+        _active_watcher.addPath(presentation_md_file)
+        
+        # Create file monitor
+        file_monitor = FileMonitor(presentation_md_file)
+        _active_workers.append(file_monitor)
+    finally:
+        _monitor_mutex.unlock()
     
     def on_file_changed(file_path):
         file_monitor.check_and_generate_html()
@@ -130,8 +139,13 @@ def manage_md_file_changes(presentation_md_file,
     _active_watcher.fileChanged.connect(on_file_changed)
     file_monitor.file_changed.connect(on_html_generated)
     
-    # Generate initial HTML
+    # Generate initial HTML to ensure it exists before WebView loads
     file_monitor.check_and_generate_html()
+    
+    # Ensure HTML file exists with initial content
+    if not os.path.exists(presentation_html_file) and file_monitor.current_html:
+        with open(presentation_html_file, 'w', encoding='utf-8') as f:
+            f.write(file_monitor.current_html)
     
     return _active_watcher
 
