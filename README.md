@@ -11,7 +11,7 @@ Slidown should allow to do everything you can do with
 
 Conversions from Markdown to Reveal.js are made with [Pandoc](http://pandoc.org/).
 
-### Using Binary Release
+### Binary Release
 
 Download the latest binary release from [GitHub Releases](https://github.com/riccardomarotti/slidown/releases) and extract it:
 
@@ -29,19 +29,6 @@ wget https://github.com/riccardomarotti/slidown/releases/download/v0/slidown-lin
 tar -xzf slidown-linux-x86_64-v0.tar.gz
 cd slidown
 ./slidown presentation.md
-```
-
-### From PyPI
-
-Install slidown using pip:
-
-```bash
-pip install slidown
-```
-
-Then run it:
-```bash
-slidown presentation.md
 ```
 
 ### From Source
@@ -69,7 +56,6 @@ make start
 
 
 
-## Preview
 
 Here's a little preview:
 
