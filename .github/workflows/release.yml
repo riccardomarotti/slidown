@@ -104,16 +104,20 @@ jobs:
       options: --privileged
     
     steps:
+    - name: Install Git for checkout
+      run: |
+        # Update package database and install git first
+        pacman -Syu --noconfirm
+        pacman -S --noconfirm git
+    
     - uses: actions/checkout@v4
       with:
         submodules: recursive
     
     - name: Install Arch Linux dependencies
       run: |
-        # Update package database
-        pacman -Syu --noconfirm
         # Install system dependencies
-        pacman -S --noconfirm python python-pip git wget pandoc wkhtmltopdf
+        pacman -S --noconfirm python python-pip wget pandoc wkhtmltopdf
         pacman -S --noconfirm qt5-base qt5-webengine
         pacman -S --noconfirm fuse2 desktop-file-utils
     
