@@ -1,0 +1,78 @@
+version: 1
+
+script:
+  # Remove any previous builds
+  - rm -rf AppDir | true
+  # Make usr and icons dirs
+  - mkdir -p AppDir/usr/src AppDir/usr/share/applications AppDir/usr/share/icons/hicolor/256x256/apps AppDir/usr/bin
+  # Copy main python code
+  - cp -r ../slidown AppDir/usr/src/
+  - cp -r ../reveal.js AppDir/usr/src/
+  - cp -r ../icon AppDir/usr/src/
+  # Install Python dependencies like GitHub Actions
+  - python3 -m pip install --ignore-installed --prefix=/usr --root=AppDir pypandoc beautifulsoup4 appdirs PyQt5 PyQtWebEngine
+  # Copy pandoc and wkhtmltopdf from system (installed via pacman)
+  - cp /usr/bin/pandoc AppDir/usr/bin/pandoc
+  - cp /usr/bin/wkhtmltopdf AppDir/usr/bin/wkhtmltopdf
+  - cp /usr/bin/python AppDir/usr/bin/python3
+  # Create desktop file
+  - |
+    cat > AppDir/usr/share/applications/slidown.desktop << EOF
+    [Desktop Entry]
+    Type=Application
+    Name=Slidown
+    Comment=A Deckset-like presentation tool using reveal.js and Pandoc
+    Exec=python3 -m slidown.main
+    Icon=slidown
+    Terminal=false
+    Categories=Office;Presentation;
+    StartupWMClass=slidown
+    EOF
+  # Copy icon
+  - cp ../icon/slidown.png AppDir/usr/share/icons/hicolor/256x256/apps/slidown.png
+  # Create AppRun
+  - |
+    cat > AppDir/AppRun << 'EOF'
+    #!/bin/bash
+    HERE="$(dirname "$(readlink -f "${0}")")"
+    export PYTHONPATH="${HERE}/usr/lib/python3.12/site-packages:${HERE}/usr/src:${PYTHONPATH}"
+    export PYTHONHOME="${HERE}/usr"
+    export XDG_DATA_DIRS="${HERE}/usr/share:${XDG_DATA_DIRS}"
+    export PATH="${HERE}/usr/bin:${PATH}"
+    export QT_QPA_PLATFORM_PLUGIN_PATH="${HERE}/usr/lib/python3.12/site-packages/PyQt5/Qt5/plugins"
+    export QT_QPA_PLATFORM=xcb
+    cd "${HERE}/usr/src"
+    exec "${HERE}/usr/bin/python3" -m slidown.main "$@"
+    EOF
+  - chmod +x AppDir/AppRun
+
+AppDir:
+  path: ./AppDir
+
+  app_info:
+    id: io.github.riccardomarotti.slidown
+    name: Slidown
+    icon: slidown
+    version: "1.0"
+    exec: usr/bin/python3
+    exec_args: -m slidown.main $@
+
+
+  files:
+    exclude:
+      - usr/share/man
+      - usr/share/doc/*/README.*
+      - usr/share/doc/*/changelog.*
+      - usr/share/doc/*/NEWS.*
+      - usr/share/doc/*/TODO.*
+
+  runtime:
+    env:
+      QT_QPA_PLATFORM: xcb
+      PYTHONPATH: '${APPDIR}/usr/lib/python3.12/site-packages:${APPDIR}/usr/src'
+      PYTHONHOME: '${APPDIR}/usr'
+
+AppImage:
+  update-information: 'gh-releases-zsync|riccardomarotti|slidown|latest|Slidown*.AppImage.zsync'
+  sign-key: None
+  arch: x86_64

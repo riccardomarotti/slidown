@@ -95,10 +95,49 @@ jobs:
         name: binary-linux
         path: dist/slidown-linux-x86_64-v*.tar.gz
 
+  build-appimage:
+    name: Build AppImage on Arch Linux
+    runs-on: ubuntu-latest
+    needs: test
+    container:
+      image: archlinux:latest
+      options: --privileged
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    
+    - name: Install Arch Linux dependencies
+      run: |
+        # Update package database
+        pacman -Syu --noconfirm
+        # Install system dependencies
+        pacman -S --noconfirm python python-pip git wget pandoc wkhtmltopdf
+        pacman -S --noconfirm qt5-base qt5-webengine
+        pacman -S --noconfirm fuse2 desktop-file-utils
+    
+    - name: Install Python dependencies and appimage-builder
+      run: |
+        python -m pip install --upgrade pip
+        pip install appimage-builder
+        pip install -r requirements.txt
+    
+    - name: Build AppImage
+      run: |
+        cd appimage
+        appimage-builder --recipe AppImageBuilder.yml
+    
+    - name: Upload AppImage artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: appimage
+        path: appimage/Slidown*.AppImage
+
   github-release:
     name: Create GitHub Release
     runs-on: ubuntu-latest
-    needs: [test, build-linux-binary]
+    needs: [test, build-linux-binary, build-appimage]
     
     steps:
     - uses: actions/checkout@v4
@@ -152,6 +191,7 @@ jobs:
         prerelease: false
         files: |
           binary-linux/slidown-linux-x86_64-v*.tar.gz
+          appimage/Slidown*.AppImage
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
