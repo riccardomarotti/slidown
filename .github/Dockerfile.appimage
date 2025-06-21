@@ -1,0 +1,27 @@
+FROM archlinux:latest
+
+# Update package database and install base packages
+RUN pacman -Syu --noconfirm && \
+    pacman -S --noconfirm base-devel git python python-pip wget pandoc \
+    qt5-base qt5-webengine fuse2 desktop-file-utils sudo
+
+# Create user for AUR operations
+RUN useradd -m -G wheel aur && \
+    echo '%wheel ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+
+# Install yay AUR helper
+USER aur
+WORKDIR /home/aur
+RUN git clone https://aur.archlinux.org/yay.git && \
+    cd yay && \
+    makepkg -si --noconfirm
+
+# Install wkhtmltopdf from AUR
+RUN yay -S --noconfirm wkhtmltopdf-static
+
+# Switch back to root for workflow usage
+USER root
+WORKDIR /
+
+# Set environment
+ENV PATH="/home/aur/.local/bin:${PATH}"
