@@ -116,10 +116,16 @@ jobs:
     
     - name: Install Arch Linux dependencies
       run: |
-        # Install system dependencies
-        pacman -S --noconfirm python python-pip wget pandoc wkhtmltopdf
+        # Install base-devel for AUR building
+        pacman -S --noconfirm base-devel python python-pip wget pandoc
         pacman -S --noconfirm qt5-base qt5-webengine
         pacman -S --noconfirm fuse2 desktop-file-utils
+        # Install yay AUR helper
+        useradd -m aur
+        echo 'aur ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+        su - aur -c "git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si --noconfirm"
+        # Install wkhtmltopdf from AUR
+        su - aur -c "yay -S --noconfirm wkhtmltopdf-static"
     
     - name: Install Python dependencies and appimage-builder
       run: |
