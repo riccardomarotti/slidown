@@ -168,12 +168,7 @@ def generate_window(presentation_html_file,
     def _open_browser():
         url = QUrl('file://' + presentation_html_file)
         
-        # Try QDesktopServices first
-        result = QDesktopServices.openUrl(url)
-        if result:
-            return  # Success!
-        
-        # Fallback: try browsers directly
+        # Don't trust QDesktopServices in PyInstaller builds - try browsers directly
         browsers = ['firefox', 'google-chrome', 'chromium', 'chromium-browser', 'konqueror']
         for browser in browsers:
             try:
@@ -190,15 +185,18 @@ def generate_window(presentation_html_file,
                     subprocess.run([browser, url.toString()], 
                                  check=False,
                                  env=env)
-                    return  # Assume success
+                    return  # Success
             except Exception:
                 continue
         
-        # Last resort: try system xdg-open
+        # Fallback to system xdg-open
         try:
             subprocess.run(['/usr/bin/xdg-open', url.toString()], check=False)
         except Exception:
             pass
+        
+        # Last resort: try QDesktopServices 
+        QDesktopServices.openUrl(url)
     
     open_editor_browser.clicked.connect(lambda evt: _open_browser())
 
