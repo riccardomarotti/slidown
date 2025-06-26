@@ -208,6 +208,27 @@ def generate_window(presentation_html_file,
             print(f"DEBUG: shell stderr: {result2.stderr}")
         except Exception as e:
             print(f"DEBUG: shell approach failed: {e}")
+            
+        # Try direct browser calls
+        print("DEBUG: Trying direct browser calls...")
+        browsers = ['firefox', 'google-chrome', 'chromium', 'chromium-browser', 'konqueror']
+        for browser in browsers:
+            try:
+                result3 = subprocess.run([browser, '--version'], 
+                                       capture_output=True, 
+                                       text=True, 
+                                       check=False)
+                if result3.returncode == 0:
+                    print(f"DEBUG: Found {browser}, trying to open...")
+                    result4 = subprocess.run([browser, url.toString()], 
+                                           check=False,
+                                           capture_output=True,
+                                           text=True)
+                    print(f"DEBUG: {browser} exit code: {result4.returncode}")
+                    print(f"DEBUG: {browser} stderr: {result4.stderr}")
+                    break
+            except Exception as e:
+                print(f"DEBUG: {browser} failed: {e}")
     
     open_editor_browser.clicked.connect(lambda evt: _open_browser_with_debug())
 
