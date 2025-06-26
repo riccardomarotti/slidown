@@ -50,7 +50,7 @@ jobs:
 
   build-linux-binary:
     name: Build Linux binary
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: test
     
     steps:
