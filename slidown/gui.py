@@ -164,7 +164,10 @@ def generate_window(presentation_html_file,
     open_editor_button.clicked.connect(lambda evt: QDesktopServices.openUrl(QUrl.fromLocalFile(presentation_md_file)))
 
     open_editor_browser = QtWidgets.QPushButton(text='Browser')
-    open_editor_browser.clicked.connect(lambda evt: QDesktopServices.openUrl(QUrl('file://' + presentation_html_file)))
+    def _open_browser_debug_action():
+        print(f"DEBUG: Browser button clicked. HTML file path: {presentation_html_file}")
+        QDesktopServices.openUrl(QUrl('file://' + presentation_html_file))
+    open_editor_browser.clicked.connect(lambda evt: _open_browser_debug_action())
 
     export_pdf_button = QtWidgets.QPushButton(text='Export PDF')
     export_pdf_button.clicked.connect(lambda evt: export_to_pdf(presentation_md_file))
