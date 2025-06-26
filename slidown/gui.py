@@ -165,7 +165,26 @@ def generate_window(presentation_html_file,
     open_editor_button.clicked.connect(lambda evt: QDesktopServices.openUrl(QUrl.fromLocalFile(presentation_md_file)))
 
     open_editor_browser = QtWidgets.QPushButton(text='Browser')
-    open_editor_browser.clicked.connect(lambda evt: QDesktopServices.openUrl(QUrl('file://' + presentation_html_file)))
+    def _open_browser_with_debug():
+        url = QUrl('file://' + presentation_html_file)
+        print(f"DEBUG: Attempting to open URL: {url.toString()}")
+        print(f"DEBUG: File exists: {os.path.exists(presentation_html_file)}")
+        print(f"DEBUG: Environment PATH: {os.environ.get('PATH', 'Not found')}")
+        print(f"DEBUG: XDG_CURRENT_DESKTOP: {os.environ.get('XDG_CURRENT_DESKTOP', 'Not found')}")
+        
+        result = QDesktopServices.openUrl(url)
+        print(f"DEBUG: QDesktopServices.openUrl() returned: {result}")
+        
+        if not result:
+            print("DEBUG: QDesktopServices failed, trying subprocess fallback")
+            try:
+                import subprocess
+                result = subprocess.run(['xdg-open', url.toString()], check=False)
+                print(f"DEBUG: subprocess xdg-open exit code: {result.returncode}")
+            except Exception as e:
+                print(f"DEBUG: subprocess fallback failed: {e}")
+    
+    open_editor_browser.clicked.connect(lambda evt: _open_browser_with_debug())
 
     export_pdf_button = QtWidgets.QPushButton(text='Export PDF')
     export_pdf_button.clicked.connect(lambda evt: export_to_pdf(presentation_md_file))

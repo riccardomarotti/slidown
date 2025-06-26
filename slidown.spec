@@ -18,7 +18,7 @@ def reveal_js_path():
     return paths
 
 def get_system_binaries():
-    """Get system binaries for pandoc and wkhtmltopdf"""
+    """Get system binaries for pandoc, wkhtmltopdf, and xdg-open"""
     binaries = []
     
     # Add pandoc
@@ -30,6 +30,11 @@ def get_system_binaries():
     wkhtmltopdf_path = shutil.which('wkhtmltopdf')
     if wkhtmltopdf_path:
         binaries.append((wkhtmltopdf_path, 'wkhtmltopdf'))
+    
+    # Add xdg-open for browser opening
+    xdg_open_path = shutil.which('xdg-open')
+    if xdg_open_path:
+        binaries.append((xdg_open_path, 'xdg-open'))
     
     return binaries
 
