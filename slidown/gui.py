@@ -171,18 +171,43 @@ def generate_window(presentation_html_file,
         print(f"DEBUG: File exists: {os.path.exists(presentation_html_file)}")
         print(f"DEBUG: Environment PATH: {os.environ.get('PATH', 'Not found')}")
         print(f"DEBUG: XDG_CURRENT_DESKTOP: {os.environ.get('XDG_CURRENT_DESKTOP', 'Not found')}")
+        print(f"DEBUG: DISPLAY: {os.environ.get('DISPLAY', 'Not found')}")
+        print(f"DEBUG: QT_QPA_PLATFORM: {os.environ.get('QT_QPA_PLATFORM', 'Not found')}")
         
         result = QDesktopServices.openUrl(url)
         print(f"DEBUG: QDesktopServices.openUrl() returned: {result}")
         
-        if not result:
-            print("DEBUG: QDesktopServices failed, trying subprocess fallback")
-            try:
-                import subprocess
-                result = subprocess.run(['xdg-open', url.toString()], check=False)
-                print(f"DEBUG: subprocess xdg-open exit code: {result.returncode}")
-            except Exception as e:
-                print(f"DEBUG: subprocess fallback failed: {e}")
+        # Always try subprocess as well to compare
+        print("DEBUG: Trying direct subprocess approach...")
+        try:
+            import subprocess
+            # Try with proper environment
+            env = os.environ.copy()
+            result = subprocess.run(['xdg-open', url.toString()], 
+                                  env=env, 
+                                  check=False, 
+                                  capture_output=True, 
+                                  text=True)
+            print(f"DEBUG: subprocess xdg-open exit code: {result.returncode}")
+            print(f"DEBUG: subprocess stdout: {result.stdout}")
+            print(f"DEBUG: subprocess stderr: {result.stderr}")
+        except Exception as e:
+            print(f"DEBUG: subprocess failed: {e}")
+            
+        # Also try different approaches
+        print("DEBUG: Trying alternative approaches...")
+        try:
+            # Try with shell=True
+            result2 = subprocess.run(f'xdg-open "{url.toString()}"', 
+                                   shell=True, 
+                                   check=False,
+                                   capture_output=True,
+                                   text=True)
+            print(f"DEBUG: shell xdg-open exit code: {result2.returncode}")
+            print(f"DEBUG: shell stdout: {result2.stdout}")
+            print(f"DEBUG: shell stderr: {result2.stderr}")
+        except Exception as e:
+            print(f"DEBUG: shell approach failed: {e}")
     
     open_editor_browser.clicked.connect(lambda evt: _open_browser_with_debug())
 
