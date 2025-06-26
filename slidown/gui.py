@@ -165,24 +165,7 @@ def generate_window(presentation_html_file,
     open_editor_button.clicked.connect(lambda evt: QDesktopServices.openUrl(QUrl.fromLocalFile(presentation_md_file)))
 
     open_editor_browser = QtWidgets.QPushButton(text='Browser')
-    def _open_browser_debug_action():
-        print(f"DEBUG: Browser button clicked. HTML file path: {presentation_html_file}")
-        print(f"DEBUG: Environment variables before xdg-open:")
-        print(f"DEBUG:   DISPLAY: {os.environ.get('DISPLAY')}")
-        print(f"DEBUG:   XDG_CURRENT_DESKTOP: {os.environ.get('XDG_CURRENT_DESKTOP')}")
-        print(f"DEBUG:   PATH: {os.environ.get('PATH')}")
-        try:
-            result = subprocess.run(['xdg-open', 'file://' + presentation_html_file], capture_output=True, text=True, check=False)
-            print(f"DEBUG: xdg-open stdout: {result.stdout}")
-            print(f"DEBUG: xdg-open stderr: {result.stderr}")
-            print(f"DEBUG: xdg-open exit code: {result.returncode}")
-            if result.returncode != 0:
-                print(f"ERROR: xdg-open failed with exit code {result.returncode}. Stderr: {result.stderr}")
-        except FileNotFoundError:
-            print("ERROR: xdg-open command not found. Please ensure it is installed and in your system's PATH.")
-        except Exception as e:
-            print(f"ERROR: An unexpected error occurred while trying to open the browser: {e}")
-    open_editor_browser.clicked.connect(lambda evt: _open_browser_debug_action())
+    open_editor_browser.clicked.connect(lambda evt: QDesktopServices.openUrl(QUrl('file://' + presentation_html_file)))
 
     export_pdf_button = QtWidgets.QPushButton(text='Export PDF')
     export_pdf_button.clicked.connect(lambda evt: export_to_pdf(presentation_md_file))
