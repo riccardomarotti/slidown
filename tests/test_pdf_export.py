@@ -4,6 +4,8 @@ import os
 import tempfile
 import pytest
 from unittest.mock import patch, MagicMock
+from PyQt5.QtGui import QDesktopServices
+from PyQt5.QtCore import QUrl
 
 from slidown.gui import export_to_pdf
 
@@ -48,15 +50,15 @@ Final slide without notes.
             mock_dialog_class.AcceptSave = 1
             mock_dialog_class.Accepted = 1
             
-            # Mock file_utils.start to avoid opening PDF
-            with patch('slidown.gui.file_utils.start') as mock_start:
+            # Mock QDesktopServices.openUrl to avoid actually opening PDF
+            with patch('slidown.gui.QDesktopServices.openUrl') as mock_open_url:
                 
                 # Mock pypandoc.convert_text to capture the filtered content
                 with patch('slidown.gui.pypandoc.convert_text') as mock_convert:
                     export_to_pdf(md_file_path)
                     
-                    # Verify file_utils.start was called to open PDF
-                    mock_start.assert_called_once_with(pdf_path)
+                    # Verify QDesktopServices.openUrl was called to open PDF
+                    mock_open_url.assert_called_once_with(QUrl.fromLocalFile(pdf_path))
                     
                     # Verify pypandoc was called
                     assert mock_convert.called
@@ -112,8 +114,8 @@ def test_pdf_export_handles_pandoc_error():
             mock_dialog_class.AcceptSave = 1
             mock_dialog_class.Accepted = 1
             
-            # Mock file_utils.start (shouldn't be called due to error)
-            with patch('slidown.gui.file_utils.start') as mock_start:
+            # Mock QDesktopServices.openUrl (shouldn't be called due to error)
+            with patch('slidown.gui.QDesktopServices.openUrl') as mock_open_url:
                 
                 # Mock pypandoc to raise an exception
                 with patch('slidown.gui.pypandoc.convert_text') as mock_convert:
@@ -126,8 +128,8 @@ def test_pdf_export_handles_pandoc_error():
                         
                         export_to_pdf(md_file_path)
                         
-                        # Verify file_utils.start was NOT called due to error
-                        mock_start.assert_not_called()
+                        # Verify QDesktopServices.openUrl was NOT called due to error
+                        mock_open_url.assert_not_called()
                     
                     # Verify error dialog was shown
                     assert mock_msgbox_class.called
@@ -157,8 +159,8 @@ def test_pdf_export_dialog_cancelled():
             mock_dialog_class.return_value = mock_dialog
             mock_dialog.exec.return_value = 0  # QFileDialog.Rejected
             
-            # Mock file_utils.start (shouldn't be called due to cancellation)
-            with patch('slidown.gui.file_utils.start') as mock_start:
+            # Mock QDesktopServices.openUrl (shouldn't be called due to cancellation)
+            with patch('slidown.gui.QDesktopServices.openUrl') as mock_open_url:
                 
                 # Mock pypandoc - should not be called
                 with patch('slidown.gui.pypandoc.convert_text') as mock_convert:
@@ -167,8 +169,8 @@ def test_pdf_export_dialog_cancelled():
                     # Verify pypandoc was NOT called
                     assert not mock_convert.called
                     
-                    # Verify file_utils.start was NOT called due to cancellation
-                    mock_start.assert_not_called()
+                    # Verify QDesktopServices.openUrl was NOT called due to cancellation
+                    mock_open_url.assert_not_called()
     
     finally:
         # Clean up

@@ -4,11 +4,24 @@ import os
 import tempfile
 import pytest
 from unittest.mock import patch, MagicMock
+from PyQt5 import QtWidgets
+from PyQt5.QtGui import QDesktopServices
+from PyQt5.QtCore import QUrl
 
 from slidown.gui import export_to_pdf
 
+@pytest.fixture(scope="function")
+def qt_app():
+    app = QtWidgets.QApplication.instance()
+    if app is None:
+        app = QtWidgets.QApplication([])
+    yield app
+    # No need to quit the app here if it's the main app instance, 
+    # as pytest-qt handles it or it's managed by the test runner.
+    # If it was created specifically for this fixture, it would be app.quit()
 
-def test_pdf_export_integration():
+
+def test_pdf_export_integration(qt_app):
     """Integration test that actually creates a PDF and verifies speaker notes are filtered"""
     # Create a temporary markdown file with speaker notes
     md_content = """# Test Presentation
@@ -47,14 +60,14 @@ Final slide without notes.
             mock_dialog_class.AcceptSave = 1
             mock_dialog_class.Accepted = 1
             
-            # Mock file_utils.start to avoid opening PDF and QMessageBox for GUI
-            with patch('slidown.gui.file_utils.start') as mock_start:
+            # Mock QDesktopServices.openUrl to avoid actually opening PDF
+            with patch('slidown.gui.QDesktopServices.openUrl') as mock_open_url:
                 
                 # Actually call export_to_pdf - this will use real pypandoc
                 export_to_pdf(md_file_path)
                 
                 # Verify PDF was opened
-                mock_start.assert_called_once_with(pdf_path)
+                mock_open_url.assert_called_once_with(QUrl.fromLocalFile(pdf_path))
                 
                 # Verify PDF was created
                 assert os.path.exists(pdf_path), "PDF file should be created"
