@@ -81,7 +81,7 @@ jobs:
     - name: Build binary with PyInstaller
       run: |
         pyinstaller slidown.spec
-        # python delete_unused_libraries.py dist/slidown # Commented out for testing
+        python delete_unused_libraries.py dist/slidown
     
     - name: Package binary
       run: |
