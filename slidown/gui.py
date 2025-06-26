@@ -3,6 +3,8 @@
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
 from PyQt5 import QtWebEngineWidgets
+from PyQt5.QtGui import QDesktopServices
+from PyQt5.QtCore import QUrl
 
 # No longer using RxPY - using Qt's QFileSystemWatcher for event-driven file monitoring
 
@@ -83,7 +85,7 @@ def export_to_pdf(presentation_md_file):
             )
             
             # Open PDF automatically
-            file_utils.start(pdf_path)
+            QDesktopServices.openUrl(QUrl.fromLocalFile(pdf_path))
             
         except Exception as e:
             # Show error message
@@ -161,7 +163,7 @@ def generate_window(presentation_html_file,
     open_editor_button.clicked.connect(lambda evt: file_utils.start(presentation_md_file))
 
     open_editor_browser = QtWidgets.QPushButton(text='Browser')
-    open_editor_browser.clicked.connect(lambda evt: file_utils.start(presentation_html_file))
+    open_editor_browser.clicked.connect(lambda evt: QDesktopServices.openUrl(QUrl.fromLocalFile(presentation_html_file)))
 
     export_pdf_button = QtWidgets.QPushButton(text='Export PDF')
     export_pdf_button.clicked.connect(lambda evt: export_to_pdf(presentation_md_file))
