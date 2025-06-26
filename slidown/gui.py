@@ -165,72 +165,42 @@ def generate_window(presentation_html_file,
     open_editor_button.clicked.connect(lambda evt: QDesktopServices.openUrl(QUrl.fromLocalFile(presentation_md_file)))
 
     open_editor_browser = QtWidgets.QPushButton(text='Browser')
-    def _open_browser_with_debug():
+    def _open_browser():
         url = QUrl('file://' + presentation_html_file)
-        print(f"DEBUG: Attempting to open URL: {url.toString()}")
-        print(f"DEBUG: File exists: {os.path.exists(presentation_html_file)}")
-        print(f"DEBUG: Environment PATH: {os.environ.get('PATH', 'Not found')}")
-        print(f"DEBUG: XDG_CURRENT_DESKTOP: {os.environ.get('XDG_CURRENT_DESKTOP', 'Not found')}")
-        print(f"DEBUG: DISPLAY: {os.environ.get('DISPLAY', 'Not found')}")
-        print(f"DEBUG: QT_QPA_PLATFORM: {os.environ.get('QT_QPA_PLATFORM', 'Not found')}")
         
+        # Try QDesktopServices first
         result = QDesktopServices.openUrl(url)
-        print(f"DEBUG: QDesktopServices.openUrl() returned: {result}")
+        if result:
+            return  # Success!
         
-        # Always try subprocess as well to compare
-        print("DEBUG: Trying direct subprocess approach...")
-        try:
-            import subprocess
-            # Try with proper environment
-            env = os.environ.copy()
-            result = subprocess.run(['xdg-open', url.toString()], 
-                                  env=env, 
-                                  check=False, 
-                                  capture_output=True, 
-                                  text=True)
-            print(f"DEBUG: subprocess xdg-open exit code: {result.returncode}")
-            print(f"DEBUG: subprocess stdout: {result.stdout}")
-            print(f"DEBUG: subprocess stderr: {result.stderr}")
-        except Exception as e:
-            print(f"DEBUG: subprocess failed: {e}")
-            
-        # Also try different approaches
-        print("DEBUG: Trying alternative approaches...")
-        try:
-            # Try with shell=True
-            result2 = subprocess.run(f'xdg-open "{url.toString()}"', 
-                                   shell=True, 
-                                   check=False,
-                                   capture_output=True,
-                                   text=True)
-            print(f"DEBUG: shell xdg-open exit code: {result2.returncode}")
-            print(f"DEBUG: shell stdout: {result2.stdout}")
-            print(f"DEBUG: shell stderr: {result2.stderr}")
-        except Exception as e:
-            print(f"DEBUG: shell approach failed: {e}")
-            
-        # Try direct browser calls
-        print("DEBUG: Trying direct browser calls...")
+        # Fallback: try browsers directly
         browsers = ['firefox', 'google-chrome', 'chromium', 'chromium-browser', 'konqueror']
         for browser in browsers:
             try:
-                result3 = subprocess.run([browser, '--version'], 
+                # Check if browser exists
+                result = subprocess.run([browser, '--version'], 
                                        capture_output=True, 
-                                       text=True, 
                                        check=False)
-                if result3.returncode == 0:
-                    print(f"DEBUG: Found {browser}, trying to open...")
-                    result4 = subprocess.run([browser, url.toString()], 
-                                           check=False,
-                                           capture_output=True,
-                                           text=True)
-                    print(f"DEBUG: {browser} exit code: {result4.returncode}")
-                    print(f"DEBUG: {browser} stderr: {result4.stderr}")
-                    break
-            except Exception as e:
-                print(f"DEBUG: {browser} failed: {e}")
+                if result.returncode == 0:
+                    # Found browser, try to open
+                    env = os.environ.copy()
+                    env['QT_QPA_PLATFORM'] = 'xcb'
+                    env['GDK_BACKEND'] = 'x11'
+                    
+                    subprocess.run([browser, url.toString()], 
+                                 check=False,
+                                 env=env)
+                    return  # Assume success
+            except Exception:
+                continue
+        
+        # Last resort: try system xdg-open
+        try:
+            subprocess.run(['/usr/bin/xdg-open', url.toString()], check=False)
+        except Exception:
+            pass
     
-    open_editor_browser.clicked.connect(lambda evt: _open_browser_with_debug())
+    open_editor_browser.clicked.connect(lambda evt: _open_browser())
 
     export_pdf_button = QtWidgets.QPushButton(text='Export PDF')
     export_pdf_button.clicked.connect(lambda evt: export_to_pdf(presentation_md_file))
