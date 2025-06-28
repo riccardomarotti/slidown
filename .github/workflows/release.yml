@@ -120,13 +120,15 @@ jobs:
         # Download and use appimagetool
         wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
         chmod +x appimagetool-x86_64.AppImage
-        ARCH=x86_64 ./appimagetool-x86_64.AppImage AppDir
+        # Get version from tag for filename
+        VERSION=${GITHUB_REF#refs/tags/v}
+        ARCH=x86_64 ./appimagetool-x86_64.AppImage AppDir Slidown-v${VERSION}-x86_64.AppImage
     
     - name: Upload AppImage artifacts
       uses: actions/upload-artifact@v4
       with:
         name: appimage-python
-        path: "Slidown*.AppImage"
+        path: "Slidown-v*-x86_64.AppImage"
 
   github-release:
     name: Create GitHub Release
@@ -184,7 +186,7 @@ jobs:
         draft: false
         prerelease: false
         files: |
-          appimage-python/*.AppImage
+          appimage-python/Slidown-v*-x86_64.AppImage
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
