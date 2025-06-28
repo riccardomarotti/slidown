@@ -11,25 +11,29 @@ Slidown should allow to do everything you can do with
 
 Conversions from Markdown to Reveal.js are made with [Pandoc](http://pandoc.org/).
 
-### Binary Release
+### AppImage Release (Recommended)
 
-Download the latest binary release from [GitHub Releases](https://github.com/riccardomarotti/slidown/releases) and extract it:
+Download the latest AppImage from [GitHub Releases](https://github.com/riccardomarotti/slidown/releases) - no installation required:
 
 ```bash
 # Download the latest version (replace VERSION with the actual version number)
-wget https://github.com/riccardomarotti/slidown/releases/download/vVERSION/slidown-linux-x86_64-vVERSION.tar.gz
-tar -xzf slidown-linux-x86_64-vVERSION.tar.gz
-cd slidown
-./slidown presentation.md
+wget https://github.com/riccardomarotti/slidown/releases/download/vVERSION/Slidown-x86_64.AppImage
+chmod +x Slidown-x86_64.AppImage
+./Slidown-x86_64.AppImage presentation.md
 ```
 
-For example, for version 0:
+For example, for version 1:
 ```bash
-wget https://github.com/riccardomarotti/slidown/releases/download/v0/slidown-linux-x86_64-v0.tar.gz
-tar -xzf slidown-linux-x86_64-v0.tar.gz
-cd slidown
-./slidown presentation.md
+wget https://github.com/riccardomarotti/slidown/releases/download/v1/Slidown-x86_64.AppImage
+chmod +x Slidown-x86_64.AppImage
+./Slidown-x86_64.AppImage presentation.md
 ```
+
+**Benefits of AppImage:**
+- No installation required - just download and run
+- Works on most Linux distributions
+- Better desktop integration (icon, file associations)
+- Reliable browser opening functionality
 
 ### From Source
 
