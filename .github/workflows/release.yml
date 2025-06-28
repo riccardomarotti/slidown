@@ -98,8 +98,8 @@ jobs:
         cp -r reveal.js dist/
         cp -r icon dist/
         
-        # Create AppImage using build command
-        python-appimage build dist/slidown-launcher.py
+        # Create AppImage using build app command
+        python-appimage build app dist/slidown-launcher.py
     
     - name: Upload AppImage artifacts
       uses: actions/upload-artifact@v4
