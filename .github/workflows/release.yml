@@ -126,7 +126,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: appimage-python
-        path: "*.AppImage"
+        path: "Slidown*.AppImage"
 
   github-release:
     name: Create GitHub Release
