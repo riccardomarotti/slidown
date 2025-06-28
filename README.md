@@ -11,7 +11,7 @@ Slidown should allow to do everything you can do with
 
 Conversions from Markdown to Reveal.js are made with [Pandoc](http://pandoc.org/).
 
-### AppImage Release (Recommended)
+### AppImage Release
 
 Download the latest AppImage from [GitHub Releases](https://github.com/riccardomarotti/slidown/releases) - no installation required:
 
@@ -28,12 +28,6 @@ wget https://github.com/riccardomarotti/slidown/releases/download/v1/Slidown-x86
 chmod +x Slidown-x86_64.AppImage
 ./Slidown-x86_64.AppImage presentation.md
 ```
-
-**Benefits of AppImage:**
-- No installation required - just download and run
-- Works on most Linux distributions
-- Better desktop integration (icon, file associations)
-- Reliable browser opening functionality
 
 ### From Source
 
