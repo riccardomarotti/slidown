@@ -3,4 +3,4 @@
 pytest
 pytest-cov>=2.5.1
 python-coveralls
-pyinstaller
+python-appimage

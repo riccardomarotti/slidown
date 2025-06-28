@@ -48,8 +48,8 @@ jobs:
 
 # Removed wheel build for now - focusing on binary releases only
 
-  build-linux-binary:
-    name: Build Linux binary
+  build-appimage:
+    name: Build AppImage (without PyInstaller)
     runs-on: ubuntu-24.04
     needs: test
     
@@ -66,39 +66,51 @@ jobs:
     - name: Install system dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y wkhtmltopdf
+        sudo apt-get install -y pandoc wkhtmltopdf fuse
         sudo apt-get install -y qt5-qmake qtbase5-dev qtwebengine5-dev
-        # Install latest pandoc from GitHub releases
-        wget https://github.com/jgm/pandoc/releases/download/3.5/pandoc-3.5-1-amd64.deb
-        sudo dpkg -i pandoc-3.5-1-amd64.deb
+        sudo apt-get install -y libqt5gui5 libqt5widgets5 libqt5webenginewidgets5
     
-    - name: Install Python dependencies
+    - name: Install python-appimage
       run: |
         python -m pip install --upgrade pip
+        pip install python-appimage
         pip install -r requirements.txt
-        pip install pyinstaller
     
-    - name: Build binary with PyInstaller
+    - name: Create AppImage
       run: |
-        pyinstaller slidown.spec
-        python delete_unused_libraries.py dist/slidown
+        # Create entry point script
+        mkdir -p dist
+        cat > dist/slidown-launcher.py << 'EOF'
+        #!/usr/bin/env python3
+        import sys
+        import os
+        
+        # Add bundled packages to path
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'slidown'))
+        
+        from slidown.main import main
+        if __name__ == '__main__':
+            main()
+        EOF
+        
+        # Copy source code
+        cp -r slidown dist/
+        cp -r reveal.js dist/
+        cp -r icon dist/
+        
+        # Create AppImage
+        python-appimage dist/slidown-launcher.py
     
-    - name: Package binary
-      run: |
-        cd dist
-        VERSION=${GITHUB_REF#refs/tags/v}
-        tar -czf slidown-linux-x86_64-v${VERSION}.tar.gz slidown/
-    
-    - name: Upload binary artifacts
+    - name: Upload AppImage artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: binary-linux
-        path: dist/slidown-linux-x86_64-v*.tar.gz
+        name: appimage-python
+        path: "*.AppImage"
 
   github-release:
     name: Create GitHub Release
     runs-on: ubuntu-latest
-    needs: [test, build-linux-binary]
+    needs: [test, build-appimage]
     
     steps:
     - uses: actions/checkout@v4
@@ -151,7 +163,7 @@ jobs:
         draft: false
         prerelease: false
         files: |
-          binary-linux/slidown-linux-x86_64-v*.tar.gz
+          appimage-python/*.AppImage
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
